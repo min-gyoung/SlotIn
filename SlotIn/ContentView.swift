@@ -2,22 +2,34 @@
 //  ContentView.swift
 //  SlotIn
 //
-//  Created by 김민경 on 6/2/25.
+//  Created by Bora Yun on 6/2/25.
 //
-
+/*
+ 1. TabView : 작업, 보관함 (완료)
+ 2. hifi 색상 반영 (완료)
+ */
 import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        
+        TabView{
+            Tab("작업", systemImage:"list.bullet"){
+                SelectTaskView()
+            }
+            Tab("보관함", systemImage:"archivebox"){
+                TaskView()
+            }
         }
-        .padding()
+        .tint(.green300) //선택된 탭의 색상
+        .onAppear{
+            UITabBar.appearance().unselectedItemTintColor =  .gray300 //선택 안된 탭의 색상
+            UITabBar.appearance().barTintColor = .gray700 //탭바 하단에 뷰가 존재하게 될때의 색상
+            UITabBar.appearance().backgroundColor = .gray700 //탭바 하단에 뷰가 존재 하지 않을 때의 색상
+        }
     }
 }
+
 
 #Preview {
     ContentView()
