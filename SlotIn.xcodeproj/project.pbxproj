@@ -35,16 +35,6 @@
 			path = SlotIn;
 			sourceTree = "<group>";
 		};
-		CCED24F22DED7AF90064323A /* SlotInTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = SlotInTests;
-			sourceTree = "<group>";
-		};
-		CCED24FC2DED7AF90064323A /* SlotInUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = SlotInUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,8 +66,6 @@
 			isa = PBXGroup;
 			children = (
 				CCED24E42DED7AF70064323A /* SlotIn */,
-				CCED24F22DED7AF90064323A /* SlotInTests */,
-				CCED24FC2DED7AF90064323A /* SlotInUITests */,
 				CCED24E32DED7AF70064323A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -130,9 +118,6 @@
 			dependencies = (
 				CCED24F12DED7AF90064323A /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				CCED24F22DED7AF90064323A /* SlotInTests */,
-			);
 			name = SlotInTests;
 			packageProductDependencies = (
 			);
@@ -152,9 +137,6 @@
 			);
 			dependencies = (
 				CCED24FB2DED7AF90064323A /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				CCED24FC2DED7AF90064323A /* SlotInUITests */,
 			);
 			name = SlotInUITests;
 			packageProductDependencies = (
