@@ -35,6 +35,11 @@
 			path = SlotIn;
 			sourceTree = "<group>";
 		};
+		CCED257B2DED83CD0064323A /* .github */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = .github;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +70,7 @@
 		CCED24D92DED7AF70064323A = {
 			isa = PBXGroup;
 			children = (
+				CCED257B2DED83CD0064323A /* .github */,
 				CCED24E42DED7AF70064323A /* SlotIn */,
 				CCED24E32DED7AF70064323A /* Products */,
 			);
@@ -97,6 +103,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				CCED24E42DED7AF70064323A /* SlotIn */,
+				CCED257B2DED83CD0064323A /* .github */,
 			);
 			name = SlotIn;
 			packageProductDependencies = (
