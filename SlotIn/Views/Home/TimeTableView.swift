@@ -13,6 +13,9 @@ struct TimeTableView: View {
   let endTime: Date
   let weekdays = ["일", "월", "화", "수", "목", "금", "토"]
   
+  let columns = Array(repeating: GridItem(.flexible(), spacing: 40), count: 7)
+  @State private var selectedSlots: Set<String> = [] // "요일-시간" 형태로 저장
+  
   // 상위 뷰에서 주입받는 Date 기준으로 주간 날짜 계산
   var weekDates: [Date] {
     TimeTableModel.currentWeekDates(reference: startTime)
@@ -37,7 +40,9 @@ struct TimeTableView: View {
         }
         
         Spacer()
+        
         Text(TimeTableModel.weekInfoText(from: startTime))
+        
         Spacer()
         
         Button(action: {
@@ -47,10 +52,11 @@ struct TimeTableView: View {
         }
       }
       
+      // 요일 헤더
       HStack {
         ForEach(weekdays, id: \.self) { day in
           Text(day)
-            .frame(maxWidth: .infinity)
+            .frame(width: 45)
         }
       }
       
@@ -59,17 +65,51 @@ struct TimeTableView: View {
       HStack {
         ForEach(weekDates, id: \.self) { date in
           Text("\(Calendar.current.component(.day, from: date))")
-            .frame(maxWidth: .infinity)
+            .frame(width: 20)
+            .padding(.leading, 30)
+          
         }
       }
       
       ScrollView {
-        VStack(alignment: .leading) {
-          ForEach(0..<24, id: \.self) { hour in
-            Text(String(format: "%02d", hour))
-              .padding(.vertical, 17)
+        HStack(alignment: .top) {
+          // 왼쪽 시간 라벨
+          VStack(spacing: 3) {
+            ForEach(0..<24, id: \.self) { hour in
+              Text(String(format: "%02d", hour))
+                .frame(maxWidth: .infinity)
+                .font(.system(size: 15))
+                .padding(.vertical, 15)
+                .padding(.leading, -30)
+            }
+          }
+          .frame(width: 20) // 시간 라벨 너비 고정
+          .padding(.top, 1)
+          
+          // 요일, 시간 격자
+          LazyVGrid(columns: columns, spacing: 3) {
+            ForEach(0..<24, id: \.self) { hour in
+              ForEach(0..<7, id: \.self) { dayIndex in
+                let key = "\(dayIndex)-\(hour)"
+                Button(action: {
+                  if selectedSlots.contains(key) {
+                    selectedSlots.remove(key)
+                  } else {
+                    selectedSlots.insert(key)
+                  }
+                }) {
+                  Text("")
+                    .frame(width: 44, height: 44)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(selectedSlots.contains(key) ? Color.green.opacity(0.7) : Color.gray.opacity(0.2))
+                    .cornerRadius(4)
+                }
+              }
+            }
           }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.leading)
       }
     }
     .padding()
