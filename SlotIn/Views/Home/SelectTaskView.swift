@@ -121,7 +121,11 @@ struct SelectTaskView: View {
                                             selectedEvent == index ? .green200 : .gray500
                                         )
                                         .onTapGesture { // 눌러서 선택
-                                            selectedEvent = index
+                                            if selectedEvent == index{ //해당 목록을 다시 누르면, 해제
+                                                selectedEvent = nil
+                                            } else{
+                                                selectedEvent = index
+                                            }
                                         }
                                         .cornerRadius(10)
                                         .padding(.horizontal, 17)
