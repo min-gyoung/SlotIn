@@ -29,9 +29,22 @@
 		CCED24F92DED7AF90064323A /* SlotInUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SlotInUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6EA1A1CA2DED9223006A4D9F /* Exceptions for "SlotIn" folder in "SlotIn" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CCED24E12DED7AF70064323A /* SlotIn */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CCED24E42DED7AF70064323A /* SlotIn */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				6EA1A1CA2DED9223006A4D9F /* Exceptions for "SlotIn" folder in "SlotIn" target */,
+			);
 			path = SlotIn;
 			sourceTree = "<group>";
 		};
@@ -389,6 +402,7 @@
 				DEVELOPMENT_TEAM = 67ZWU2L55M;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SlotIn/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -417,6 +431,7 @@
 				DEVELOPMENT_TEAM = 67ZWU2L55M;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SlotIn/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
