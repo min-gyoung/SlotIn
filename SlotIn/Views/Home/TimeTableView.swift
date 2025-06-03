@@ -23,16 +23,16 @@ struct TimeTableView: View {
   }
   
   init(selectedTask: String, startTime: Date, endTime: Date) {
-      self.selectedTask = selectedTask
-      self.startTime = startTime
-      self.endTime = endTime
-
-      let calendar = Calendar.current
-      let weekInterval = calendar.dateInterval(of: .weekOfYear, for: startTime)
-      let weekStart = weekInterval?.start ?? startTime
-      
+    self.selectedTask = selectedTask
+    self.startTime = startTime
+    self.endTime = endTime
+    
+    let calendar = Calendar.current
+    let weekInterval = calendar.dateInterval(of: .weekOfYear, for: startTime)
+    let weekStart = weekInterval?.start ?? startTime
+    
     // currentWeekStartDate 초기값은 주차 시작일로 설정
-      _currentWeekStartDate = State(initialValue: weekStart)
+    _currentWeekStartDate = State(initialValue: weekStart)
   }
   var body: some View {
     VStack {
@@ -54,7 +54,8 @@ struct TimeTableView: View {
         
         Spacer()
         
-        Text(TimeTableModel.weekInfoText(from: startTime))
+        // n월 n주차
+        Text(TimeTableModel.weekInfoText(from: currentWeekStartDate))
         
         Spacer()
         
