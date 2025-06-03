@@ -167,7 +167,7 @@ struct SelectTaskView: View {
                        
                     }
                     Spacer()
-                }
+                }.padding(.vertical,55)
             }.navigationDestination(isPresented: $showRecommendView){
                 RecommendView()
             }
