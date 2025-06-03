@@ -84,6 +84,7 @@ struct SelectTaskView: View {
                         .onChange(of: date) {newDate in
                             fetchEvents(for:newDate) //날짜 바뀔때마다 이벤트 갱신(누를때마다 되어서 datepicker를 끄면 이미 변경됨)
                             selectedEvent = nil //이벤트(인덱스) 선택 초기화
+                            showPicker = false // 자동으로 datepicker 닫힘
                         }
                        
                     }
@@ -128,14 +129,9 @@ struct SelectTaskView: View {
                                         
                                         Spacer()
                                         
-                                        if selectedEvent == index{
-                                            Image(systemName:"checkmark")
-                                                .padding(.leading, -60)
-                                        } else{
-                                            Image(systemName:"checkmark")
-                                                .padding(.leading, -60)
-                                                .opacity(0) //자리는 차지하고 있어서 눌러도 크기 안 달라짐
-                                        }
+                                        Image(systemName: "checkmark")
+                                            .padding(.leading, -60)
+                                            .opacity(selectedEvent == index ? 1:0) // image가 자리를 찾이하고 있어서, 눌러도 크기 안 달라짐
                                     }
                                     
                                     
