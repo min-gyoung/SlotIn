@@ -15,12 +15,25 @@ struct TimeTableView: View {
   
   let columns = Array(repeating: GridItem(.flexible(), spacing: 40), count: 7)
   @State private var selectedSlots: Set<String> = [] // "요일-시간" 형태로 저장
+  @State private var currentWeekStartDate: Date
   
-  // 상위 뷰에서 주입받는 Date 기준으로 주간 날짜 계산
+  // 주간 날짜 계산
   var weekDates: [Date] {
-    TimeTableModel.currentWeekDates(reference: startTime)
+    TimeTableModel.currentWeekDates(reference: currentWeekStartDate)
   }
   
+  init(selectedTask: String, startTime: Date, endTime: Date) {
+      self.selectedTask = selectedTask
+      self.startTime = startTime
+      self.endTime = endTime
+
+      let calendar = Calendar.current
+      let weekInterval = calendar.dateInterval(of: .weekOfYear, for: startTime)
+      let weekStart = weekInterval?.start ?? startTime
+      
+    // currentWeekStartDate 초기값은 주차 시작일로 설정
+      _currentWeekStartDate = State(initialValue: weekStart)
+  }
   var body: some View {
     VStack {
       Text("시간 선택")
@@ -34,7 +47,7 @@ struct TimeTableView: View {
       
       HStack {
         Button(action: {
-          // 이전 주차 이동 처리 예정
+          currentWeekStartDate = TimeTableModel.previousWeek(from: currentWeekStartDate)
         }) {
           Image(systemName: "chevron.left")
         }
@@ -46,7 +59,7 @@ struct TimeTableView: View {
         Spacer()
         
         Button(action: {
-          // 다음 주차 이동 처리 예정
+          currentWeekStartDate = TimeTableModel.nextWeek(from: currentWeekStartDate)
         }) {
           Image(systemName: "chevron.right")
         }
