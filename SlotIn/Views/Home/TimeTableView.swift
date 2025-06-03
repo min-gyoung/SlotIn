@@ -17,6 +17,11 @@ struct TimeTableView: View {
   @State private var selectedSlots: Set<String> = [] // "요일-시간" 형태로 저장
   @State private var currentWeekStartDate: Date
   
+  // 예시 시간대
+  let preferredStartHour = 9
+  let preferredEndHour = 15 // 15시는 포함 안 됨, 9~14시
+
+  
   // 주간 날짜 계산
   var weekDates: [Date] {
     TimeTableModel.currentWeekDates(reference: currentWeekStartDate)
@@ -34,6 +39,7 @@ struct TimeTableView: View {
     // currentWeekStartDate 초기값은 주차 시작일로 설정
     _currentWeekStartDate = State(initialValue: weekStart)
   }
+  
   var body: some View {
     VStack {
       Text("시간 선택")
@@ -86,10 +92,13 @@ struct TimeTableView: View {
       }
       
       ScrollView {
+        // 사용자가 설정한 선호 시간대만 보임(정시 단위로)
+        // ex) 9시~3시 설정하면 밑에 칸들은 안보임
         HStack(alignment: .top) {
           // 왼쪽 시간 라벨
           VStack(spacing: 3) {
-            ForEach(0..<24, id: \.self) { hour in
+//            ForEach(0..<24, id: \.self) { hour in
+            ForEach(preferredStartHour..<preferredEndHour, id: \.self) { hour in
               Text(String(format: "%02d", hour))
                 .frame(maxWidth: .infinity)
                 .font(.system(size: 15))
@@ -102,7 +111,8 @@ struct TimeTableView: View {
           
           // 요일, 시간 격자
           LazyVGrid(columns: columns, spacing: 3) {
-            ForEach(0..<24, id: \.self) { hour in
+//            ForEach(0..<24, id: \.self) { hour in
+            ForEach(preferredStartHour..<preferredEndHour, id: \.self) { hour in
               ForEach(0..<7, id: \.self) { dayIndex in
                 let key = "\(dayIndex)-\(hour)"
                 Button(action: {
