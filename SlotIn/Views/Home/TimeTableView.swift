@@ -11,6 +11,8 @@ struct TimeTableView: View {
   let selectedTask: String
   let startTime: Date
   let endTime: Date
+  let startHour: Date
+  let endHour: Date
   let weekdays = ["일", "월", "화", "수", "목", "금", "토"]
   
   let columns = Array(repeating: GridItem(.flexible(), spacing: 40), count: 7)
@@ -33,6 +35,7 @@ struct TimeTableView: View {
     TimeTableModel.currentWeekDates(reference: currentWeekStartDate)
   }
   
+    init(selectedTask: String, startTime: Date, endTime: Date, startHour: Date, endHour: Date) {
   var model: TimeTableModel {
     TimeTableModel(startDate: startTime, endDate: endTime)
   }
@@ -48,6 +51,8 @@ struct TimeTableView: View {
     self.selectedTask = selectedTask
     self.startTime = startTime
     self.endTime = endTime
+    self.startHour = startHour
+    self.endHour = endHour
     
     let calendar = Calendar.current
     let weekInterval = calendar.dateInterval(of: .weekOfYear, for: startTime)
@@ -232,9 +237,5 @@ struct TimeTableView: View {
 }
 
 #Preview {
-  TimeTableView(
-    selectedTask: "서강대학교 홍보 영상 기획 회의",
-    startTime: Calendar.current.date(bySettingHour: 9, minute: 30, second: 0, of: Date())!,
-    endTime: Calendar.current.date(bySettingHour: 11, minute: 15, second: 0, of: Date())!
-  )
+  TimeTableView(selectedTask: "서강대학교 홍보 영상 기획 회의", startTime: Date(), endTime: Date() + 86400, startHour: Calendar.current.date(bySettingHour: 9, minute: 30, second: 0, of: Date())!, endHour: Calendar.current.date(bySettingHour: 11, minute: 15, second: 0, of: Date())!)
 }

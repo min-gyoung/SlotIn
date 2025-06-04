@@ -26,6 +26,7 @@ struct SelectTaskView: View {
     @State private var events: [EKEvent] = [] //불러온 이벤트들 저장
     @State private var showRecommendView: Bool = false //navigate to RecommendView
     
+    
     var body: some View {
         NavigationStack{
             ZStack{
@@ -84,6 +85,7 @@ struct SelectTaskView: View {
                         .onChange(of: date) {newDate in
                             fetchEvents(for:newDate) //날짜 바뀔때마다 이벤트 갱신(누를때마다 되어서 datepicker를 끄면 이미 변경됨)
                             selectedEvent = nil //이벤트(인덱스) 선택 초기화
+                            showPicker = false // 자동으로 datepicker 닫힘
                         }
                        
                     }
@@ -120,7 +122,11 @@ struct SelectTaskView: View {
                                             selectedEvent == index ? .green200 : .gray500
                                         )
                                         .onTapGesture { // 눌러서 선택
-                                            selectedEvent = index
+                                            if selectedEvent == index{ //해당 목록을 다시 누르면, 해제
+                                                selectedEvent = nil
+                                            } else{
+                                                selectedEvent = index
+                                            }
                                         }
                                         .cornerRadius(10)
                                         .padding(.horizontal, 17)
@@ -128,14 +134,9 @@ struct SelectTaskView: View {
                                         
                                         Spacer()
                                         
-                                        if selectedEvent == index{
-                                            Image(systemName:"checkmark")
-                                                .padding(.leading, -60)
-                                        } else{
-                                            Image(systemName:"checkmark")
-                                                .padding(.leading, -60)
-                                                .opacity(0) //자리는 차지하고 있어서 눌러도 크기 안 달라짐
-                                        }
+                                        Image(systemName: "checkmark")
+                                            .padding(.leading, -60)
+                                            .opacity(selectedEvent == index ? 1:0) // image가 자리를 찾이하고 있어서, 눌러도 크기 안 달라짐
                                     }
                                     
                                     
@@ -171,10 +172,13 @@ struct SelectTaskView: View {
                        
                     }
                     Spacer()
-                }
+                }.padding(.vertical,55)
             }.navigationDestination(isPresented: $showRecommendView){
-                RecommendView()
+                if let index = selectedEvent {
+                    DetailInputView(startDate: events[index].startDate, endDate: events[index].endDate, event: events[index])
+                }
             }
+            //일정 상세화면에 선택된 일정 인덱스로 넘겨 주기
         }
         
     }
