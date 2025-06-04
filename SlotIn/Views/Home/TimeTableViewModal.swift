@@ -34,6 +34,12 @@ struct TimeTableViewModal: View {
           selection: $date,
           displayedComponents: [.hourAndMinute]
         )
+        .onAppear {
+          UIDatePicker.appearance().minuteInterval = 15
+        }
+        .onDisappear {
+          UIDatePicker.appearance().minuteInterval = 1
+        }
       }
       HStack {
         Text("종료 시간")
@@ -42,6 +48,12 @@ struct TimeTableViewModal: View {
           selection: $date,
           displayedComponents: [.hourAndMinute]
         )
+        .onAppear {
+          UIDatePicker.appearance().minuteInterval = 15
+        }
+        .onDisappear {
+          UIDatePicker.appearance().minuteInterval = 1
+        }
       }
       Button("이 시간으로 확정하기") {
         showConfirmation = true
