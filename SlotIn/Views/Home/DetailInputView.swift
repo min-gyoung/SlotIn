@@ -237,8 +237,8 @@ struct DetailInputView: View {
                             .fontWeight(.semibold)
                     }
                     .buttonStyle(FilledButtonStyle())
-                    .navigationDestination(isPresented: $isGoingTimeTable) {
-                        RecommendView(taskTitle: event.title, startTime: startDate, endTime: endDate, startHour: startTime, endHour: endTime)
+                    .navigationDestination(isPresented: $isGoingTimeTable) {   
+                        TimeTableView(taskTitle: event.title, startTime: startDate, endTime: endDate, startHour: startTime, endHour: endTime)
                     }
                 }
                 .padding(.horizontal, 16)
