@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import EventKit
 
 struct DetailInputView: View {
     
@@ -17,13 +18,31 @@ struct DetailInputView: View {
     @State private var activePicker: PickerType? = nil
     
     //날짜 및 시간 피커
-    @State private var startDate = Date()
-    @State private var endDate = Date()
-    @State private var startTime = Date()
-    @State private var endTime = Date()
+    @State private var calendar: Calendar = .current //새로운 변수 추가
+    @State var startDate: Date
+    @State var endDate: Date
+    @State var startTime: Date = {
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
+        components.hour = 9
+        components.minute = 0
+        return Calendar.current.date(from: components)!
+    }()
+    @State var endTime: Date = {
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
+        components.hour = 23
+        components.minute = 0
+        return Calendar.current.date(from: components)!
+    }()
+    //시간 기본 값 설정(시작은 09:00, 종료는 23:00)
     
     //팝업창
     @State private var showPopover = false
+    
+    //다음 화면으로 이동하는 것을 관리하는 변수
+    @State private var isGoingTimeTable: Bool = false
+    
+    //선택된 일정
+    @State var event: EKEvent
 
     // 사용할 피커의 종류를 구분
     // 버튼을 눌렀을 때 어떤 피커를 열지 선택
@@ -44,12 +63,12 @@ struct DetailInputView: View {
                     } label: {
                         Image(systemName: "chevron.left")
                     }
-                    .foregroundColor(Color(red: 0.84, green: 0.98, blue: 0.87))
+                    .foregroundColor(Color.green100)
                     .font(.system(size: 22, weight: .medium))
 
                     Text("작업 선택")
                         .fontWeight(.bold)
-                        .foregroundColor(Color(red: 0.84, green: 0.98, blue: 0.87))
+                        .foregroundColor(Color.green100)
                         .font(.system(size: 17, weight: .semibold))
                 }
                 .padding()
@@ -57,15 +76,15 @@ struct DetailInputView: View {
                 //뷰 제목
                 Text("세부 정보 입력")
                     .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(Color(red: 0.95, green: 0.95, blue: 0.95))
+                    .foregroundColor(Color.gray100)
                     .padding(.bottom, 22)
                     .padding(.top, 12)
                     .padding(.horizontal, 16)
 
                 //이벤트 제목
-                Text("서강대학교 홍보 영상 기획 회의")
+                Text("서강대학교 홍보 영상 기획 회의") // -> event.title
                     .font(.system(size: 17, weight: .semibold))
-                    .foregroundColor(Color(red: 0.84, green: 0.98, blue: 0.87))
+                    .foregroundColor(Color.green100)
                     .padding(.horizontal, 17)
                     .padding(.bottom, 16)
 
@@ -84,10 +103,10 @@ struct DetailInputView: View {
                         }) {
                             Text(formattedDate(startDate))
                                 .font(.system(size: 17, weight: .semibold))
-                                .foregroundColor(Color(red: 0.43, green: 0.73, blue: 0.52))
+                                .foregroundColor(Color.green200)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
-                                .background(Color(red: 0.37, green: 0.37, blue: 0.37))
+                                .background(Color.gray500)
                                 .cornerRadius(10)
                         }
                         .padding(.horizontal, 40)
@@ -95,7 +114,7 @@ struct DetailInputView: View {
                     .padding(.vertical, 0.5)
 
                     Divider()
-                        .background(Color(red: 0.65, green: 0.65, blue: 0.65).frame(width: 361))
+                        .background(Color.gray300.frame(width: 361))
 
                     HStack {
                         Text("작업 마감일")
@@ -110,10 +129,10 @@ struct DetailInputView: View {
                         }) {
                             Text(formattedDate(endDate))
                                 .font(.system(size: 17, weight: .semibold))
-                                .foregroundColor(Color(red: 0.43, green: 0.73, blue: 0.52))
+                                .foregroundColor(Color.green200)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
-                                .background(Color(red: 0.37, green: 0.37, blue: 0.37))
+                                .background(Color.gray500)
                                 .cornerRadius(10)
                         }
                     }
@@ -121,7 +140,7 @@ struct DetailInputView: View {
                     .padding(.vertical, 0.5)
 
                     Divider()
-                        .background(Color(red: 0.65, green: 0.65, blue: 0.65).frame(width: 361))
+                        .background(Color.gray300.frame(width: 361))
 
                     HStack {
                         Text("하루 중 선호 시간대")
@@ -140,10 +159,10 @@ struct DetailInputView: View {
                         }) {
                             Text(formattedTime(startTime))
                                 .font(.system(size: 17, weight: .semibold))
-                                .foregroundColor(Color(red: 0.43, green: 0.73, blue: 0.52))
+                                .foregroundColor(Color.green200)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
-                                .background(Color(red: 0.37, green: 0.37, blue: 0.37))
+                                .background(Color.gray500)
                                 .cornerRadius(10)
                         }
                     }
@@ -151,7 +170,7 @@ struct DetailInputView: View {
                     .padding(.vertical, 0.5)
 
                     Divider()
-                        .background(Color(red: 0.65, green: 0.65, blue: 0.65).frame(width: 361))
+                        .background(Color.gray300.frame(width: 361))
 
                     HStack {
                         Spacer()
@@ -166,17 +185,17 @@ struct DetailInputView: View {
                         }) {
                             Text(formattedTime(endTime))
                                 .font(.system(size: 17, weight: .semibold))
-                                .foregroundColor(Color(red: 0.43, green: 0.73, blue: 0.52))
+                                .foregroundColor(Color.green200)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
-                                .background(Color(red: 0.37, green: 0.37, blue: 0.37))
+                                .background(Color.gray500)
                                 .cornerRadius(10)
                         }
                     }
                    .padding(.horizontal, 40)
                 }
-                .foregroundColor(Color(red: 0.95, green: 0.95, blue: 0.95))
-                .background(Color(red: 0.24, green: 0.24, blue: 0.24).frame(width: 361, height: 210).cornerRadius(12))
+                .foregroundColor(Color.gray100)
+                .background(Color.gray600.frame(width: 361, height: 210).cornerRadius(12))
                 //상자의 너비 수정 필요한가?
 
                 Spacer()
@@ -185,6 +204,7 @@ struct DetailInputView: View {
                 HStack(spacing: 24) {
                     Button(action: {
                         // 작업 보류하기 기능 추가
+                        print("작업 보류하기")
                     }) {
                         Text("작업 보류하기")
                             .frame(width: 144)
@@ -194,18 +214,24 @@ struct DetailInputView: View {
 
                     Button(action: {
                         // 가능한 시간만 보기 기능 추가
+                        print("가능한 시간만 보기")
+                        isGoingTimeTable.toggle()
                     }) {
                         Text("가능한 시간만 보기")
                             .frame(width: 144)
                             .fontWeight(.semibold)
                     }
                     .buttonStyle(FilledButtonStyle())
+                    .navigationDestination(isPresented: $isGoingTimeTable) {
+                        TimeTableView(selectedTask: event.title, startTime: startDate, endTime: endDate, startHour: startTime, endHour: endTime)
+                    }
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 43)
-                .background(Color(red: 0.07, green: 0.07, blue: 0.07))
+                .background(Color.gray700)
             }
-            .background(Color(red: 0.07, green: 0.07, blue: 0.07).edgesIgnoringSafeArea(.all))
+            .background(Color.gray700.edgesIgnoringSafeArea(.all))
+            
 
             // 현재 선택된 피커(activePicker)가 nil이 아닌 경우에만 뷰를 띄움
             if let picker = activePicker {
@@ -224,12 +250,16 @@ struct DetailInputView: View {
                     switch picker {
                     case .startDate:
                         DatePicker("", selection: $startDate, displayedComponents: [.date])
+                            .symbolRenderingMode(.multicolor)
                             .datePickerStyle(.graphical)
-                            .background(Color(red: 0.51, green: 0.51, blue: 0.51))
+                            .foregroundStyle(.white)
+                            .tint(Color.green200)
+                            .background(Color.gray400)
                             .cornerRadius(13)
-                            .accentColor(Color(red: 0.53, green: 0.9, blue: 0.64))
                             .scaleEffect(0.85)
                             .frame(maxWidth: 300)
+                            .preferredColorScheme(.dark)
+                            
                         //현재 날짜 피커 투명도 조절 추가
                         //달력 크기 및 비율 조절 추가
                     case .endDate:
@@ -268,7 +298,7 @@ struct DetailInputView: View {
     // 날짜 포맷
     func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US")
+        formatter.locale = Locale(identifier: "en_KR")
         formatter.dateFormat = "MMM dd, yyyy"
         return formatter.string(from: date)
     }
@@ -276,7 +306,7 @@ struct DetailInputView: View {
     // 시간 포맷
     func formattedTime(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US")
+        formatter.locale = Locale(identifier: "en_KR")
         formatter.dateFormat = "h:mm a"
         return formatter.string(from: date)
     }
@@ -345,6 +375,6 @@ struct PopupView: View {
 
 
 #Preview {
-    DetailInputView()
+    DetailInputView(startDate: Date(), endDate: Date() + 3600, event: .init(eventStore: .init()))
 }
 
