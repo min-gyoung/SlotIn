@@ -8,9 +8,18 @@
 import Foundation
 
 struct TimeTableModel {
+  
   // 시간 차이 텍스트
   static func durationText(start: Date, end: Date) -> String {
     let diff = Calendar.current.dateComponents([.hour, .minute], from: start, to: end)
+    return "소요시간: \(diff.hour ?? 0)시간 \(diff.minute ?? 0)분"
+  }
+  
+  let startDate: Date
+  let endDate: Date
+  
+  var durationText: String {
+    let diff = Calendar.current.dateComponents([.hour, .minute], from: startDate, to: endDate)
     return "소요시간: \(diff.hour ?? 0)시간 \(diff.minute ?? 0)분"
   }
   
@@ -68,5 +77,26 @@ struct TimeTableModel {
   // 다음 주차 시작일
   static func nextWeek(from date: Date) -> Date {
     Calendar.current.date(byAdding: .day, value: 7, to: date) ?? date
+  }
+  
+  // dayIndex - 주차 내 요일 인덱스 (0 = 일요일, 6 = 토요일)
+  static func formattedTimeRange(weekDates: [Date], dayIndex: Int, from startHour: Int, to endHour: Int) -> String {
+      let date = weekDates[dayIndex]
+      let calendar = Calendar.current
+
+      // 날짜 포맷: "6월 4일(화)"
+      let formatter = DateFormatter()
+      formatter.dateFormat = "M월 d일(E)"
+      formatter.locale = Locale(identifier: "ko_KR")
+      let dateString = formatter.string(from: date)
+
+      // 시작/종료 시간 구성
+      let startTime = calendar.date(bySettingHour: startHour, minute: 0, second: 0, of: date)!
+      let endTime = calendar.date(bySettingHour: endHour + 1, minute: 0, second: 0, of: date)! // 종료 시간은 포함 범위니까 +1
+
+      let timeFormatter = DateFormatter()
+      timeFormatter.dateFormat = "HH:mm"
+
+      return "\(dateString) \(timeFormatter.string(from: startTime)) - \(timeFormatter.string(from: endTime))"
   }
 }
