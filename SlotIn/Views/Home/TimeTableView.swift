@@ -1,9 +1,9 @@
-////
-////  TimeTableView.swift
-////  SlotIn
-////
-////  Created by 김민경 on 6/2/25.
-////
+//
+//  TimeTableView.swift
+//  SlotIn
+//
+// Created by 김민경 on 6/2/25.
+//
 //
 
 import SwiftUI
@@ -28,7 +28,7 @@ struct TimeTableView: View {
   @State private var alertDescription = ""
   @State private var showModal = false
   @State private var isValidSlotSelection = false
-  
+
   // 예시 시간대
   var startHourValue: Int {
     Calendar.current.component(.hour, from: startHour)
@@ -38,6 +38,7 @@ struct TimeTableView: View {
     Calendar.current.component(.hour, from: endHour)
   }
   
+
   init(taskTitle: String, startTime: Date, endTime: Date, startHour: Date, endHour: Date) {
     self.taskTitle = taskTitle
     self.startTime = startTime
@@ -56,22 +57,42 @@ struct TimeTableView: View {
   var body: some View {
     VStack {
       Text("시간 선택")
-        .font(.title)
+        .font(.system(size: 28, weight: .bold))
+        .foregroundColor(Color.gray100)
+        .padding(.bottom, 22)
+        .padding(.top, 12)
+        .padding(.horizontal, 16)
+      
+      Text(taskTitle)
+        .font(.system(size: 17, weight: .semibold))
+        .foregroundColor(Color.green100)
+        .padding(.horizontal, 17)
+        .padding(.bottom, 16)
       
       Text(model.durationText)
-        .font(.subheadline)
-        .foregroundColor(.gray)
+        .font(.system(size: 17, weight: .semibold))
+        .foregroundColor(Color.gray200)
+        .padding(.horizontal, 17)
+        .padding(.bottom, 16)
       
       HStack {
         Button(action: {
           currentWeekStartDate = TimeTableModel.previousWeek(from: currentWeekStartDate)
         }) {
           Image(systemName: "chevron.left")
+            .font(.system(size: 17, weight: .semibold))
+            .foregroundColor(Color.gray200)
+            .padding(.horizontal, 17)
+            .padding(.bottom, 16)
         }
         
         Spacer()
         
         Text(TimeTableModel.weekInfoText(from: currentWeekStartDate))
+          .font(.system(size: 17, weight: .semibold))
+          .foregroundColor(Color.gray200)
+          .padding(.horizontal, 17)
+          .padding(.bottom, 16)
         
         Spacer()
         
@@ -79,6 +100,10 @@ struct TimeTableView: View {
           currentWeekStartDate = TimeTableModel.nextWeek(from: currentWeekStartDate)
         }) {
           Image(systemName: "chevron.right")
+            .font(.system(size: 17, weight: .semibold))
+            .foregroundColor(Color.gray200)
+            .padding(.horizontal, 17)
+            .padding(.bottom, 16)
         }
       }
       
@@ -87,8 +112,11 @@ struct TimeTableView: View {
         Spacer()
         ForEach(weekdays, id: \.self) { day in
           Text(day)
-            .frame(width: 45)
+            .frame(width: 15)
             .font(.system(size: 14, weight: .medium))
+            .foregroundColor(Color.gray200)
+            .padding(.horizontal, 17)
+            .padding(.bottom, 16)
         }
       }
       
@@ -103,6 +131,7 @@ struct TimeTableView: View {
             .frame(width: 44, height: 20)
             .font(.system(size: 14))
             .multilineTextAlignment(.center)
+            .foregroundColor(Color.gray200)
         }
       }
       
@@ -115,6 +144,8 @@ struct TimeTableView: View {
               Text(String(format: "%02d", hour))
                 .frame(width: 36, height: 44, alignment: .trailing)
                 .font(.system(size: 14))
+                .multilineTextAlignment(.center)
+                .foregroundColor(Color.gray200)
             }
           }
           
@@ -151,6 +182,7 @@ struct TimeTableView: View {
         duration: TimeInterval(requiredSlotCount * 60 * 60)
       )
     }
+    .background(Color.gray700.edgesIgnoringSafeArea(.all))
   }
   
   var model: TimeTableModel {
