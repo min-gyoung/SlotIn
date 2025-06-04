@@ -10,7 +10,6 @@ import SwiftUI
 import EventKit
 
 struct TimeTableView: View {
-  let taskTitle: String
   let startTime: Date
   let endTime: Date
   let startHour: Date
@@ -30,6 +29,8 @@ struct TimeTableView: View {
   @State private var isValidSlotSelection = false
   @State private var events: [EKEvent] = []
   private let eventStore = EKEventStore()
+    
+    @State var event: EKEvent
   
   // 예시 시간대
   var startHourValue: Int {
@@ -41,12 +42,12 @@ struct TimeTableView: View {
   }
   
   
-  init(taskTitle: String, startTime: Date, endTime: Date, startHour: Date, endHour: Date) {
-    self.taskTitle = taskTitle
+    init(startTime: Date, endTime: Date, startHour: Date, endHour: Date, event: EKEvent) {
     self.startTime = startTime
     self.endTime = endTime
     self.startHour = startHour
     self.endHour = endHour
+    self.event = event
     
     let calendar = Calendar.current
     let weekInterval = calendar.dateInterval(of: .weekOfYear, for: startTime)
@@ -65,7 +66,7 @@ struct TimeTableView: View {
         .padding(.top, 12)
         .padding(.horizontal, 16)
       
-      Text(taskTitle)
+        Text(event.title)
         .font(.system(size: 17, weight: .semibold))
         .foregroundColor(Color.green100)
         .padding(.horizontal, 17)
@@ -180,7 +181,7 @@ struct TimeTableView: View {
     }
     .sheet(isPresented: $showModal) {
       TimeTableViewModal(
-        taskTitle: taskTitle,
+        taskTitle: event.title,
         startTime: startTime,
         endTime: endTime,
         duration: TimeInterval(requiredSlotCount * 60 * 60)
@@ -190,11 +191,11 @@ struct TimeTableView: View {
   }
   
   var model: TimeTableModel {
-    TimeTableModel(startDate: startTime, endDate: endTime)
+      TimeTableModel(startDate: event.startDate, endDate: event.endDate)
   }
   
   var requiredSlotCount: Int {
-    let diff = Calendar.current.dateComponents([.minute], from: startTime, to: endTime)
+      let diff = Calendar.current.dateComponents([.minute], from: event.startDate, to: event.endDate)
     let totalMinutes = diff.minute ?? 0
     return Int(ceil(Double(totalMinutes) / 60.0))
   }
@@ -226,7 +227,7 @@ struct TimeTableView: View {
                 selectedSlots.insert("\(dayIndex)-\(h)")
               }
               isValidSlotSelection = true
-              alertTitle = taskTitle
+                alertTitle = event.title
               alertDescription = formattedTimeRange(for: dayIndex, from: range.lowerBound, to: range.upperBound)
             } else {
               isValidSlotSelection = false
@@ -296,11 +297,10 @@ struct TimeTableView: View {
 
 #Preview {
   TimeTableView(
-    taskTitle: "서강대학교 홍보 영상 기획 회의",
     startTime: Calendar.current.date(bySettingHour: 9, minute: 30, second: 0, of: Date())!,
     endTime: Calendar.current.date(bySettingHour: 11, minute: 0, second: 0, of: Date())!,
     startHour: Calendar.current.date(bySettingHour: 9, minute: 30, second: 0, of: Date())!,
-    endHour: Calendar.current.date(bySettingHour: 11, minute: 0, second: 0, of: Date())!
+    endHour: Calendar.current.date(bySettingHour: 11, minute: 0, second: 0, of: Date())!, event: .init(eventStore: .init())
   )
 }
 
