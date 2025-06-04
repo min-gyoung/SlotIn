@@ -18,7 +18,7 @@ struct TimeTableView: View {
   
   let weekdays = ["일", "월", "화", "수", "목", "금", "토"]
   let columns = Array(repeating: GridItem(.flexible(), spacing: 40), count: 7)
-
+  
   @State private var selectedSlots: Set<String> = [] // 요일-시간 형태로 저장
   @State private var currentWeekStartDate: Date
   @State private var currentStartDate: Date
@@ -30,8 +30,13 @@ struct TimeTableView: View {
   @State private var isValidSlotSelection = false
   
   // 예시 시간대
-  let preferredStartHour = 9
-  let preferredEndHour = 15
+  var startHourValue: Int {
+    Calendar.current.component(.hour, from: startHour)
+  }
+  
+  var endHourValue: Int {
+    Calendar.current.component(.hour, from: endHour)
+  }
   
   init(taskTitle: String, startTime: Date, endTime: Date, startHour: Date, endHour: Date) {
     self.taskTitle = taskTitle
@@ -103,28 +108,28 @@ struct TimeTableView: View {
       
       // 시간표
       ScrollView(.vertical) {
-          HStack(alignment: .top, spacing: 3) {
-            // 시간
-            VStack(spacing: 3) {
-              ForEach(preferredStartHour..<preferredEndHour, id: \.self) { hour in
-                Text(String(format: "%02d", hour))
-                  .frame(width: 36, height: 44, alignment: .trailing)
-                  .font(.system(size: 14))
-              }
+        HStack(alignment: .top, spacing: 3) {
+          // 시간
+          VStack(spacing: 3) {
+            ForEach(startHourValue..<endHourValue, id: \.self) { hour in
+              Text(String(format: "%02d", hour))
+                .frame(width: 36, height: 44, alignment: .trailing)
+                .font(.system(size: 14))
             }
-            
-            // 요일, 시간 격자
-            LazyVGrid(columns: Array(repeating: GridItem(.fixed(44), spacing: 3), count: 7), spacing: 3) {
-              ForEach(preferredStartHour..<preferredEndHour, id: \.self) { hour in
-                ForEach(0..<7, id: \.self) { dayIndex in
-                  slotButton(dayIndex: dayIndex, hour: hour)
-                }
+          }
+          
+          // 요일, 시간 격자
+          LazyVGrid(columns: Array(repeating: GridItem(.fixed(44), spacing: 3), count: 7), spacing: 3) {
+            ForEach(startHourValue..<endHourValue, id: \.self) { hour in
+              ForEach(0..<7, id: \.self) { dayIndex in
+                slotButton(dayIndex: dayIndex, hour: hour)
               }
             }
           }
-          .padding(.trailing, 8)
         }
+        .padding(.trailing, 8)
       }
+    }
     
     .padding()
     .alert(isPresented: $showAlert) {
