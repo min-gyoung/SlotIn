@@ -82,7 +82,7 @@ struct DetailInputView: View {
                     .padding(.horizontal, 16)
 
                 //이벤트 제목
-                Text("서강대학교 홍보 영상 기획 회의") // -> event.title
+                Text(event.title)
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundColor(Color.green100)
                     .padding(.horizontal, 17)
@@ -177,7 +177,7 @@ struct DetailInputView: View {
 
                         Text("종료")
                             .font(.system(size: 15))
-                            .padding(.horizontal, 8)
+                            .padding(.horizontal, 4)
                             .padding(.vertical, 8)
 
                         Button(action: {
@@ -253,47 +253,48 @@ struct DetailInputView: View {
                         DatePicker("", selection: $startDate, displayedComponents: [.date])
                             .symbolRenderingMode(.multicolor)
                             .datePickerStyle(.graphical)
-                            .foregroundStyle(.white)
                             .tint(Color.green200)
                             .background(Color.gray400)
                             .cornerRadius(13)
                             .scaleEffect(0.85)
                             .frame(maxWidth: 300)
                             .preferredColorScheme(.dark)
-                            
                         //현재 날짜 피커 투명도 조절 추가
                         //달력 크기 및 비율 조절 추가
                     case .endDate:
                         DatePicker("", selection: $endDate, displayedComponents: [.date])
+                            .symbolRenderingMode(.multicolor)
                             .datePickerStyle(.graphical)
-                            .background(Color(red: 0.51, green: 0.51, blue: 0.51))
+                            .tint(Color.green200)
+                            .background(Color.gray400)
                             .cornerRadius(13)
-                            .accentColor(Color(red: 0.53, green: 0.9, blue: 0.64))
                             .scaleEffect(0.85)
                             .frame(maxWidth: 300)
+                            .preferredColorScheme(.dark)
                         //현재 날짜 피커 투명도 조절 추가
                         //달력 크기 및 비율 조절 추가
                     case .startTime:
                         DatePicker("", selection: $startTime, displayedComponents: [.hourAndMinute])
                             .datePickerStyle(.wheel)
-                            .frame(width: 200, height: 200)
-                            .shadow(color: Color(red: 0.55, green: 0.55, blue: 0.55), radius: 10)
-                            .background(Color(red: 0.15, green: 0.15, blue: 0.15).opacity(0.82))
+                            .shadow(color: Color.gray700.opacity(0.1), radius: 30, x: 0, y: 10)
+                            .background(Color.gray500)
                             .cornerRadius(13)
+                            .preferredColorScheme(.dark)
                         //시간휠 글씨 희게 만들기
                     case .endTime:
                         DatePicker("", selection: $endTime, displayedComponents: [.hourAndMinute])
                             .datePickerStyle(.wheel)
-                            .frame(width: 200, height: 200)
-                            .shadow(color: Color(red: 0.55, green: 0.55, blue: 0.55), radius: 10)
-                            .background(Color(red: 0.15, green: 0.15, blue: 0.15).opacity(0.82))
+                            .shadow(color: Color.gray700.opacity(0.1), radius: 30, x: 0, y: 10)
+                            .background(Color.gray500)
                             .cornerRadius(13)
+                            .preferredColorScheme(.dark)
                         //시간휠 글씨 희게 만들기
                     }
                 }
                 .padding()
             }
         }
+        .navigationBarBackButtonHidden(true)
     }
 
     // 날짜 포맷
@@ -318,7 +319,7 @@ struct OutlinedButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.subheadline)
-            .foregroundColor(.white)
+            .foregroundColor(Color.gray100)
             .padding()
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white, lineWidth: 1))
     }
@@ -328,9 +329,9 @@ struct FilledButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.subheadline)
-            .foregroundColor(.black)
+            .foregroundColor(Color.gray700)
             .padding()
-            .background(Color(red: 0.43, green: 0.73, blue: 0.52))
+            .background(Color.green200)
             .cornerRadius(10)
     }
 }
