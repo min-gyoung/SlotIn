@@ -1,8 +1,9 @@
-//
-//  TimeTableView.swift
-//  SlotIn
-//
-//  Created by 김민경 on 6/2/25.
+////
+////  TimeTableView.swift
+////  SlotIn
+////
+////  Created by 김민경 on 6/2/25.
+////
 //
 
 import SwiftUI
@@ -243,3 +244,4 @@ struct TimeTableView: View {
     endHour: Calendar.current.date(bySettingHour: 11, minute: 0, second: 0, of: Date())!
   )
 }
+
