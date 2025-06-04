@@ -67,7 +67,6 @@ struct DetailInputView: View {
                     .font(.system(size: 22, weight: .medium))
 
                     Text("작업 선택")
-                        .fontWeight(.bold)
                         .foregroundColor(Color.green100)
                         .font(.system(size: 17, weight: .semibold))
                 }
@@ -102,12 +101,14 @@ struct DetailInputView: View {
                             activePicker = .startDate
                         }) {
                             Text(formattedDate(startDate))
-                                .font(.system(size: 17, weight: .semibold))
+                                .font(.system(size: 17))
                                 .foregroundColor(Color.green200)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
                                 .background(Color.gray500)
-                                .cornerRadius(10)
+                                .cornerRadius(6)
+                                .lineLimit(1)
+                                 .frame(width: 129)
                         }
                         .padding(.horizontal, 40)
                     }
@@ -128,12 +129,12 @@ struct DetailInputView: View {
                             activePicker = .endDate
                         }) {
                             Text(formattedDate(endDate))
-                                .font(.system(size: 17, weight: .semibold))
+                                .font(.system(size: 17))
                                 .foregroundColor(Color.green200)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
                                 .background(Color.gray500)
-                                .cornerRadius(10)
+                                .cornerRadius(6)
                         }
                     }
                     .padding(.horizontal, 40)
@@ -158,12 +159,12 @@ struct DetailInputView: View {
                             activePicker = .startTime
                         }) {
                             Text(formattedTime(startTime))
-                                .font(.system(size: 17, weight: .semibold))
+                                .font(.system(size: 17))
                                 .foregroundColor(Color.green200)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
                                 .background(Color.gray500)
-                                .cornerRadius(10)
+                                .cornerRadius(6)
                         }
                     }
                     .padding(.horizontal, 40)
@@ -177,19 +178,19 @@ struct DetailInputView: View {
 
                         Text("종료")
                             .font(.system(size: 15))
-                            .padding(.horizontal, 4)
+                            .padding(.horizontal, 8)
                             .padding(.vertical, 8)
 
                         Button(action: {
                             activePicker = .endTime
                         }) {
                             Text(formattedTime(endTime))
-                                .font(.system(size: 17, weight: .semibold))
+                                .font(.system(size: 17))
                                 .foregroundColor(Color.green200)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
                                 .background(Color.gray500)
-                                .cornerRadius(10)
+                                .cornerRadius(6)
                         }
                     }
                    .padding(.horizontal, 40)
@@ -203,7 +204,6 @@ struct DetailInputView: View {
                 //아래의 두 버튼
                 HStack(spacing: 24) {
                     Button(action: {
-                        // 작업 보류하기 기능 추가
                         print("작업 보류하기")
                     }) {
                         Text("작업 보류하기")
@@ -213,13 +213,13 @@ struct DetailInputView: View {
                     .fontWeight(.semibold)
 
                     Button(action: {
-                        // 가능한 시간만 보기 기능 추가
                         print("가능한 시간만 보기")
                         isGoingTimeTable.toggle()
                     }) {
                         Text("가능한 시간만 보기")
                             .frame(width: 144)
                             .fontWeight(.semibold)
+                            .foregroundColor(Color.green700)
                     }
                     .buttonStyle(FilledButtonStyle())
                     .navigationDestination(isPresented: $isGoingTimeTable) {
@@ -254,10 +254,10 @@ struct DetailInputView: View {
                             .symbolRenderingMode(.multicolor)
                             .datePickerStyle(.graphical)
                             .tint(Color.green200)
-                            .background(Color.gray400)
+                            .background(Color.gray500)
                             .cornerRadius(13)
                             .scaleEffect(0.85)
-                            .frame(maxWidth: 300)
+                            .frame(width: 329)
                             .preferredColorScheme(.dark)
                         //현재 날짜 피커 투명도 조절 추가
                         //달력 크기 및 비율 조절 추가
@@ -266,10 +266,10 @@ struct DetailInputView: View {
                             .symbolRenderingMode(.multicolor)
                             .datePickerStyle(.graphical)
                             .tint(Color.green200)
-                            .background(Color.gray400)
+                            .background(Color.gray500)
                             .cornerRadius(13)
                             .scaleEffect(0.85)
-                            .frame(maxWidth: 300)
+                            .frame(width: 329)
                             .preferredColorScheme(.dark)
                         //현재 날짜 피커 투명도 조절 추가
                         //달력 크기 및 비율 조절 추가
@@ -278,17 +278,17 @@ struct DetailInputView: View {
                             .datePickerStyle(.wheel)
                             .shadow(color: Color.gray700.opacity(0.1), radius: 30, x: 0, y: 10)
                             .background(Color.gray500)
-                            .cornerRadius(13)
+                            .cornerRadius(8)
                             .preferredColorScheme(.dark)
-                        //시간휠 글씨 희게 만들기
+                            .frame(width: 219, height: 195)
                     case .endTime:
                         DatePicker("", selection: $endTime, displayedComponents: [.hourAndMinute])
                             .datePickerStyle(.wheel)
                             .shadow(color: Color.gray700.opacity(0.1), radius: 30, x: 0, y: 10)
                             .background(Color.gray500)
-                            .cornerRadius(13)
+                            .cornerRadius(8)
                             .preferredColorScheme(.dark)
-                        //시간휠 글씨 희게 만들기
+                            .frame(width: 219, height: 195)
                     }
                 }
                 .padding()
@@ -319,9 +319,9 @@ struct OutlinedButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.subheadline)
-            .foregroundColor(Color.gray100)
+            .foregroundColor(Color.gray200)
             .padding()
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white, lineWidth: 1))
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1))
     }
 }
 
@@ -332,11 +332,11 @@ struct FilledButtonStyle: ButtonStyle {
             .foregroundColor(Color.gray700)
             .padding()
             .background(Color.green200)
-            .cornerRadius(10)
+            .cornerRadius(8)
     }
 }
 
-//팝업뷰 코드
+//팝업뷰
 //패딩값 조정
 //프레임 세로 길이 조정
 struct PopupView: View {
@@ -345,10 +345,10 @@ struct PopupView: View {
             VStack(spacing:5){
                 Text("작업이 보류되었습니다.")
                     .font(.system(size: 17, weight: .semibold))
-                    .foregroundColor(Color(red: 0.95, green: 0.95, blue: 0.95))
+                    .foregroundColor(Color.gray100)
         
                 Text("서강대학교 홍보 영상 기획 회의\n5월 28일(화) 13:00 - 16:00")
-                    .foregroundColor(Color(red: 0.95, green: 0.95, blue: 0.95))
+                    .foregroundColor(Color.gray100)
                     .multilineTextAlignment(.center)
                     .font(.system(size: 13))
             }
@@ -356,21 +356,21 @@ struct PopupView: View {
             .padding(.vertical, 10)
             
             Divider()
-                .background(Color(red: 0.51, green: 0.51, blue: 0.51)
+                .background(Color.gray400
                     .frame(width: 280))
             
             Button {
             } label: {
                 Text("보관함에서 보기")
                     .font(.system(size: 17, weight: .semibold))
-                    .foregroundColor(Color(red: 0.53, green: 0.9, blue: 0.64))
+                    .foregroundColor(Color.green200)
                     .padding(.horizontal, 70)
             }
                 }
                 .padding()
-                .background(Color(red: 0.24, green: 0.24, blue: 0.24))
-                .cornerRadius(16)
-                .shadow(radius: 25)
+                .background(Color.gray600)
+                .cornerRadius(14)
+                //.shadow(radius: 25)
                 .frame(width: 280, height: 190)
         }
     }
