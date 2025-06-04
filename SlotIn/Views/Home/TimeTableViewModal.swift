@@ -59,6 +59,8 @@ struct TimeTableViewModal: View {
           selection: $startDate,
           displayedComponents: [.hourAndMinute]
         )
+        .datePickerStyle(.graphical)
+                               
         .onAppear {
           UIDatePicker.appearance().minuteInterval = 15
         }
