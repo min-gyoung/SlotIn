@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct TaskView: View {
+ 
     var body: some View {
+        
         NavigationView{
             ZStack{
                 
@@ -32,6 +34,16 @@ struct TaskView: View {
                         NavigationLink(destination: TaskDetailView()){
                             //eventTitle
                             //text("마감기한: \(endDate)"
+                            VStack(alignment:.leading){
+                                Text("서강대학교 홍보 영상 기획 회의")
+                                    .font(.system(size:17, weight: .semibold))
+                                    .padding(.bottom,2)
+                                Text("마감 기한: June 5, 2025")
+                                    .font(.system(size:16))
+                            }
+                            .padding(.horizontal,-10)
+                            
+                            
                         }
                         .padding(.horizontal,28)
                         .frame(width:361, height: 77)
@@ -45,6 +57,7 @@ struct TaskView: View {
             }
         }
     }
+   
 }
 
 #Preview {
