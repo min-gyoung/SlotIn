@@ -17,7 +17,7 @@ struct TimeTableViewModal: View {
   
   var recommendedSlot: DateInterval?
   var existingEvent: EKEvent?
-  var selectedTask: String
+  var taskTitle: String
   var startTime: Date
   var endTime: Date
   var duration: TimeInterval  // 초 단위 소요시간 (1시간 30분 = 5400)
@@ -25,14 +25,14 @@ struct TimeTableViewModal: View {
   init(
     recommendedSlot: DateInterval? = nil,
     existingEvent: EKEvent? = nil,
-    selectedTask: String,
+    taskTitle: String,
     startTime: Date,
     endTime: Date,
     duration: TimeInterval = 5400  // 소요시간 임의 설정
   ) {
     self.recommendedSlot = recommendedSlot
     self.existingEvent = existingEvent
-    self.selectedTask = selectedTask
+    self.taskTitle = taskTitle
     self.startTime = startTime
     self.endTime = endTime
     self.duration = duration
@@ -111,7 +111,7 @@ struct TimeTableViewModal: View {
 
 #Preview {
   TimeTableViewModal(
-    selectedTask: "서강대학교 홍보 영상 기획 회의",
+    taskTitle: "서강대학교 홍보 영상 기획 회의",
     startTime: Calendar.current.date(bySettingHour: 9, minute: 30, second: 0, of: Date())!,
     endTime: Calendar.current.date(bySettingHour: 11, minute: 0, second: 0, of: Date())!,
     duration: 5400  // 1시간 30분

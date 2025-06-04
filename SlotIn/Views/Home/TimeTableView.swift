@@ -10,7 +10,7 @@ import SwiftUI
 import EventKit
 
 struct TimeTableView: View {
-  let selectedTask: String
+  let taskTitle: String
   let startTime: Date
   let endTime: Date
   let startHour: Date
@@ -33,8 +33,8 @@ struct TimeTableView: View {
   let preferredStartHour = 9
   let preferredEndHour = 15
   
-  init(selectedTask: String, startTime: Date, endTime: Date, startHour: Date, endHour: Date) {
-    self.selectedTask = selectedTask
+  init(taskTitle: String, startTime: Date, endTime: Date, startHour: Date, endHour: Date) {
+    self.taskTitle = taskTitle
     self.startTime = startTime
     self.endTime = endTime
     self.startHour = startHour
@@ -140,7 +140,7 @@ struct TimeTableView: View {
     }
     .sheet(isPresented: $showModal) {
       TimeTableViewModal(
-        selectedTask: selectedTask,
+        taskTitle: taskTitle,
         startTime: startTime,
         endTime: endTime,
         duration: TimeInterval(requiredSlotCount * 60 * 60)
@@ -184,7 +184,7 @@ struct TimeTableView: View {
             }
             isValidSlotSelection = true
             // 선택 칸 수가 부족한 경우
-            alertTitle = selectedTask
+            alertTitle = taskTitle
             alertDescription = formattedTimeRange(for: dayIndex, from: range.lowerBound, to: range.upperBound)
           } else {
             isValidSlotSelection = false
@@ -237,7 +237,7 @@ struct TimeTableView: View {
 
 #Preview {
   TimeTableView(
-    selectedTask: "서강대학교 홍보 영상 기획 회의",
+    taskTitle: "서강대학교 홍보 영상 기획 회의",
     startTime: Calendar.current.date(bySettingHour: 9, minute: 30, second: 0, of: Date())!,
     endTime: Calendar.current.date(bySettingHour: 11, minute: 0, second: 0, of: Date())!,
     startHour: Calendar.current.date(bySettingHour: 9, minute: 30, second: 0, of: Date())!,
