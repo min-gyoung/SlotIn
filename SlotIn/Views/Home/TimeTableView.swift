@@ -18,7 +18,7 @@ struct TimeTableView: View {
   
   let weekdays = ["일", "월", "화", "수", "목", "금", "토"]
   let columns = Array(repeating: GridItem(.flexible(), spacing: 40), count: 7)
-  
+    @Environment(\.dismiss) private var dismiss
   @State private var selectedSlots: Set<String> = [] // 요일-시간 형태로 저장
   @State private var currentWeekStartDate: Date
   @State private var currentStartDate: Date
@@ -57,44 +57,59 @@ struct TimeTableView: View {
   }
   
   var body: some View {
-    VStack {
-      Text("시간 선택")
-        .font(.system(size: 28, weight: .bold))
-        .foregroundColor(Color.gray100)
-        .padding(.bottom, 22)
-        .padding(.top, 12)
-        .padding(.horizontal, 16)
+      VStack{
+          Button{
+              dismiss()
+          } label:{
+              HStack{
+                  Image(systemName: "chevron.left")
+                      .font(.system(size: 22))
+                  Text("세부 정보 입력")
+                      .font(.system(size: 17))
+                  Spacer()
+              }
+              .padding(.leading, 8)
+              .foregroundColor(.green100)
+          }
+        
+          HStack{
+              Text("시간 선택")
+                  .foregroundColor(.gray100)
+                  .font(.system(size:28, weight: .semibold))
+                  .padding(.top,18)
+                  .padding(.leading, 16)
+              Spacer()
+          }
+          .frame(width: 393, height: 52)
+          
+          
+          HStack{
+              Text(taskTitle)
+                  .font(.system(size:17, weight: .semibold))
+                  .foregroundColor(.green100)
+              
+              Spacer()
+              
+              Text(model.durationText)
+                  .font(.system(size: 13))
+                  .foregroundColor(.gray200)
+          }
+          .frame(width: 362, height: 22)
+          .padding(.top, 12)
+          .padding(.bottom, 18)
       
-      Text(taskTitle)
-        .font(.system(size: 17, weight: .semibold))
-        .foregroundColor(Color.green100)
-        .padding(.horizontal, 17)
-        .padding(.bottom, 16)
-      
-      Text(model.durationText)
-        .font(.system(size: 17, weight: .semibold))
-        .foregroundColor(Color.gray200)
-        .padding(.horizontal, 17)
-        .padding(.bottom, 16)
       
       HStack {
         Button(action: {
           currentWeekStartDate = TimeTableModel.previousWeek(from: currentWeekStartDate)
         }) {
           Image(systemName: "chevron.left")
-            .font(.system(size: 17, weight: .semibold))
-            .foregroundColor(Color.gray200)
-            .padding(.horizontal, 17)
-            .padding(.bottom, 16)
         }
         
         Spacer()
         
         Text(TimeTableModel.weekInfoText(from: currentWeekStartDate))
-          .font(.system(size: 17, weight: .semibold))
-          .foregroundColor(Color.gray200)
           .padding(.horizontal, 17)
-          .padding(.bottom, 16)
         
         Spacer()
         
@@ -102,52 +117,63 @@ struct TimeTableView: View {
           currentWeekStartDate = TimeTableModel.nextWeek(from: currentWeekStartDate)
         }) {
           Image(systemName: "chevron.right")
-            .font(.system(size: 17, weight: .semibold))
-            .foregroundColor(Color.gray200)
-            .padding(.horizontal, 17)
-            .padding(.bottom, 16)
         }
       }
+      .font(.system(size: 17, weight: .semibold))
+      .foregroundColor(Color.gray100)
+          
+      .padding(.bottom, 16)
+      .frame(width: 329, height: 22)
+      .padding(.leading, 50)
+      .padding(.trailing, 15)
+
       
       // 요일 헤더
-      HStack(spacing: 3) {
+      HStack(spacing: 2) {
         Spacer()
         ForEach(weekdays, id: \.self) { day in
           Text(day)
-            .frame(width: 15)
-            .font(.system(size: 14, weight: .medium))
-            .foregroundColor(Color.gray200)
-            .padding(.horizontal, 17)
-            .padding(.bottom, 16)
+            .frame(width: 46)
+            .font(.system(size: 13, weight: .medium))
+            .foregroundColor(Color.gray100)
         }
       }
+      .padding(.vertical, 16)
+      .frame(width: 329, height: 22)
+      .padding(.leading, 45)
+      .padding(.trailing, 20)
+    
       
       Divider()
       
       // 날짜 숫자 헤더
-      HStack(spacing: 3) {
-        Spacer().frame(width: 36) // 시간 라벨 영역 확보
+          HStack(spacing:2) {
+        Spacer()
+//                  .frame(width: 46) // 시간 라벨 영역 확보
         
         ForEach(weekDates, id: \.self) { date in
           Text("\(Calendar.current.component(.day, from: date))")
-            .frame(width: 44, height: 20)
-            .font(.system(size: 14))
-            .multilineTextAlignment(.center)
-            .foregroundColor(Color.gray200)
+            .frame(width: 46)
+            .font(.system(size: 15, weight: .semibold))
+//            .multilineTextAlignment(.center)
+            .foregroundColor(Color.gray100)
         }
-      }
+          }
+          .frame(width: 329, height: 28)
+          .padding(.leading, 45)
+          .padding(.trailing, 20)
       
       // 시간표
       ScrollView(.vertical) {
-        HStack(alignment: .top, spacing: 3) {
+        HStack(spacing: 3) {
           // 시간
-          VStack(spacing: 3) {
+            VStack(spacing: 3) {
             ForEach(startHourValue..<endHourValue, id: \.self) { hour in
               Text(String(format: "%02d", hour))
-                .frame(width: 36, height: 44, alignment: .trailing)
-                .font(.system(size: 14))
+                .frame(width: 44, height: 44, alignment: .center)
+                .font(.system(size: 15))
                 .multilineTextAlignment(.center)
-                .foregroundColor(Color.gray200)
+                .foregroundColor(Color.gray100)
             }
           }
           
@@ -163,6 +189,7 @@ struct TimeTableView: View {
         .padding(.trailing, 8)
       }
     }
+    .navigationBarBackButtonHidden()
     .onAppear {
       fetchEventsForWeek()
     }
