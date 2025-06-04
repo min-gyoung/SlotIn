@@ -78,7 +78,7 @@ struct DetailInputView: View {
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(Color.gray100)
                     .padding(.bottom, 22)
-                    .padding(.top, 12)
+                    .padding(.top, 10)
                     .padding(.horizontal, 16)
 
                 //이벤트 제목
@@ -102,13 +102,14 @@ struct DetailInputView: View {
                             activePicker = .startDate
                         }) {
                             Text(formattedDate(startDate))
-                                .font(.system(size: 17, weight: .semibold))
+                                .font(.system(size: 17))
                                 .foregroundColor(Color.green200)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
                                 .background(Color.gray500)
-                                .cornerRadius(10)
+                                .cornerRadius(6)
                         }
+                        .frame(width: 127, height: 34)
                         .padding(.horizontal, 40)
                     }
                     .padding(.vertical, 0.5)
@@ -128,13 +129,13 @@ struct DetailInputView: View {
                             activePicker = .endDate
                         }) {
                             Text(formattedDate(endDate))
-                                .font(.system(size: 17, weight: .semibold))
+                                .font(.system(size: 17))
                                 .foregroundColor(Color.green200)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
                                 .background(Color.gray500)
-                                .cornerRadius(10)
-                        }
+                                .cornerRadius(6)
+                        }.frame(width: 127, height: 34)
                     }
                     .padding(.horizontal, 40)
                     .padding(.vertical, 0.5)
@@ -158,12 +159,12 @@ struct DetailInputView: View {
                             activePicker = .startTime
                         }) {
                             Text(formattedTime(startTime))
-                                .font(.system(size: 17, weight: .semibold))
+                                .font(.system(size: 17))
                                 .foregroundColor(Color.green200)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
                                 .background(Color.gray500)
-                                .cornerRadius(10)
+                                .cornerRadius(6)
                         }
                     }
                     .padding(.horizontal, 40)
@@ -184,18 +185,18 @@ struct DetailInputView: View {
                             activePicker = .endTime
                         }) {
                             Text(formattedTime(endTime))
-                                .font(.system(size: 17, weight: .semibold))
+                                .font(.system(size: 17))
                                 .foregroundColor(Color.green200)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
                                 .background(Color.gray500)
-                                .cornerRadius(10)
+                                .cornerRadius(6)
                         }
                     }
                    .padding(.horizontal, 40)
                 }
                 .foregroundColor(Color.gray100)
-                .background(Color.gray600.frame(width: 361, height: 210).cornerRadius(12))
+                .background(Color.gray600.frame(width: 361, height: 201).cornerRadius(12))
                 //상자의 너비 수정 필요한가?
 
                 Spacer()
@@ -254,10 +255,9 @@ struct DetailInputView: View {
                             .symbolRenderingMode(.multicolor)
                             .datePickerStyle(.graphical)
                             .tint(Color.green200)
-                            .background(Color.gray400)
+                            .background(Color.gray500)
                             .cornerRadius(13)
-                            .scaleEffect(0.85)
-                            .frame(maxWidth: 300)
+                            .frame(width: 340, height: 320)
                             .preferredColorScheme(.dark)
                         //현재 날짜 피커 투명도 조절 추가
                         //달력 크기 및 비율 조절 추가
@@ -266,10 +266,9 @@ struct DetailInputView: View {
                             .symbolRenderingMode(.multicolor)
                             .datePickerStyle(.graphical)
                             .tint(Color.green200)
-                            .background(Color.gray400)
+                            .background(Color.gray500)
                             .cornerRadius(13)
-                            .scaleEffect(0.85)
-                            .frame(maxWidth: 300)
+                            .frame(width: 340, height: 340)
                             .preferredColorScheme(.dark)
                         //현재 날짜 피커 투명도 조절 추가
                         //달력 크기 및 비율 조절 추가
@@ -277,6 +276,7 @@ struct DetailInputView: View {
                         DatePicker("", selection: $startTime, displayedComponents: [.hourAndMinute])
                             .datePickerStyle(.wheel)
                             .shadow(color: Color.gray700.opacity(0.1), radius: 30, x: 0, y: 10)
+                            .frame(width:219, height: 195)
                             .background(Color.gray500)
                             .cornerRadius(13)
                             .preferredColorScheme(.dark)
@@ -285,6 +285,7 @@ struct DetailInputView: View {
                         DatePicker("", selection: $endTime, displayedComponents: [.hourAndMinute])
                             .datePickerStyle(.wheel)
                             .shadow(color: Color.gray700.opacity(0.1), radius: 30, x: 0, y: 10)
+                            .frame(width:219, height: 195)
                             .background(Color.gray500)
                             .cornerRadius(13)
                             .preferredColorScheme(.dark)
