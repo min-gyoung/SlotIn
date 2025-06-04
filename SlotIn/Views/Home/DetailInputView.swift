@@ -43,6 +43,9 @@ struct DetailInputView: View {
     
     //선택된 일정
     @State var event: EKEvent
+    
+    @State private var alertString: String = ""
+    
 
     // 사용할 피커의 종류를 구분
     // 버튼을 눌렀을 때 어떤 피커를 열지 선택
@@ -108,6 +111,7 @@ struct DetailInputView: View {
                                 .padding(.vertical, 6)
                                 .background(Color.gray500)
                                 .cornerRadius(10)
+                                .frame(width: 130)
                         }
                         .padding(.horizontal, 40)
                     }
@@ -134,6 +138,7 @@ struct DetailInputView: View {
                                 .padding(.vertical, 6)
                                 .background(Color.gray500)
                                 .cornerRadius(10)
+                                .frame(width: 130)
                         }
                     }
                     .padding(.horizontal, 40)
@@ -204,14 +209,24 @@ struct DetailInputView: View {
                 HStack(spacing: 24) {
                     Button(action: {
                         // 작업 보류하기 기능 추가
-                        print("작업 보류하기")
+                        alertString = alertMessage(item: event)
+                        showPopover = true
                     }) {
                         Text("작업 보류하기")
                             .frame(width: 144)
                     }
                     .buttonStyle(OutlinedButtonStyle())
                     .fontWeight(.semibold)
-
+                    .alert("작업이 보류되었습니다.", isPresented: $showPopover) {
+                            Button(action: {
+                                print("보관함으로 넘어가기")
+                            }, label: {
+                                Text("보관함에서 보기")
+                            })
+                        } message: {
+                            Text(alertString)
+                        }
+                    
                     Button(action: {
                         // 가능한 시간만 보기 기능 추가
                         print("가능한 시간만 보기")
@@ -222,9 +237,8 @@ struct DetailInputView: View {
                             .fontWeight(.semibold)
                     }
                     .buttonStyle(FilledButtonStyle())
-                    .navigationDestination(isPresented: $isGoingTimeTable) {
+                    .navigationDestination(isPresented: $isGoingTimeTable) {   
                         TimeTableView(taskTitle: event.title, startTime: startDate, endTime: endDate, startHour: startTime, endHour: endTime)
-//                        RecommendView(taskTitle: event.title, startTime: startDate, endTime: endDate, startHour: startTime, endHour: endTime)
                     }
                 }
                 .padding(.horizontal, 16)
@@ -300,7 +314,7 @@ struct DetailInputView: View {
     // 날짜 포맷
     func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_KR")
+        formatter.locale = Locale(identifier: "ko_KR")
         formatter.dateFormat = "MMM dd, yyyy"
         return formatter.string(from: date)
     }
@@ -308,9 +322,30 @@ struct DetailInputView: View {
     // 시간 포맷
     func formattedTime(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_KR")
+        formatter.locale = Locale(identifier: "ko_KR")
         formatter.dateFormat = "h:mm a"
         return formatter.string(from: date)
+    }
+    
+    func formattedAlertDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "M월 d일(E) HH:mm"
+        return formatter.string(from: date)
+    }
+    
+    func formattedAlertTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: date)
+    }
+    
+    func alertMessage(item: EKEvent) -> String {
+        let title = event.title ?? "일정 제목 없음"
+        let start = event.startDate.flatMap { formattedAlertDate($0) } ?? "날짜 미설정"
+        let end = event.endDate.flatMap { formattedAlertTime($0) } ?? "시간 미설정"
+        return "\(title)\n\(start)-\(end)"
     }
 }
 
@@ -339,44 +374,10 @@ struct FilledButtonStyle: ButtonStyle {
 //팝업뷰 코드
 //패딩값 조정
 //프레임 세로 길이 조정
-struct PopupView: View {
-    var body: some View {
-        VStack {
-            VStack(spacing:5){
-                Text("작업이 보류되었습니다.")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundColor(Color(red: 0.95, green: 0.95, blue: 0.95))
-        
-                Text("서강대학교 홍보 영상 기획 회의\n5월 28일(화) 13:00 - 16:00")
-                    .foregroundColor(Color(red: 0.95, green: 0.95, blue: 0.95))
-                    .multilineTextAlignment(.center)
-                    .font(.system(size: 13))
-            }
-            .padding(.horizontal, 43)
-            .padding(.vertical, 10)
-            
-            Divider()
-                .background(Color(red: 0.51, green: 0.51, blue: 0.51)
-                    .frame(width: 280))
-            
-            Button {
-            } label: {
-                Text("보관함에서 보기")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundColor(Color(red: 0.53, green: 0.9, blue: 0.64))
-                    .padding(.horizontal, 70)
-            }
-                }
-                .padding()
-                .background(Color(red: 0.24, green: 0.24, blue: 0.24))
-                .cornerRadius(16)
-                .shadow(radius: 25)
-                .frame(width: 280, height: 190)
-        }
-    }
 
 
 #Preview {
     DetailInputView(startDate: Date(), endDate: Date() + 3600, event: .init(eventStore: .init()))
 }
+
 
