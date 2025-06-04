@@ -16,7 +16,7 @@ struct TimeTableViewModal: View {
   @State private var showConfirmation = false
   @State private var events: [EKEvent] = []
   private let eventStore = EKEventStore()
-
+  
   var recommendedSlot: DateInterval?
   var existingEvent: EKEvent?
   var taskTitle: String
@@ -46,63 +46,105 @@ struct TimeTableViewModal: View {
   }
   
   var body: some View {
-    VStack {
-      Text("세부 시작 시간 설정")
-      // 선택 날짜
-      Text("\(formatted(startDate, dateOnly: true))")
-      
-      // 소요 시간
-      Text("소요 시간: \(formatted(duration))")
-      
-      HStack {
-        Text("시작 시간")
-        DatePicker(
-          "",
-          selection: $startDate,
-          displayedComponents: [.hourAndMinute]
-        )
-        .datePickerStyle(.graphical)
-                               
-        .onAppear {
-          UIDatePicker.appearance().minuteInterval = 15
-        }
-        .onDisappear {
-          UIDatePicker.appearance().minuteInterval = 1
-        }
-      }
-      HStack {
-        Text("종료 시간")
-        Text(formatted(calculatedEndDate, dateOnly: false))
-      }
-
-      Button("이 시간으로 확정하기") {
-        requestAccess {
-          addEvent(
-            title: taskTitle,
-            startDate: startDate,
-            endDate: calculatedEndDate,
-            notes: "SlotIn에서 생성됨",
-            category: "SlotIn"
+    ZStack {
+      Color.gray700
+        .ignoresSafeArea()
+      VStack {
+        Text("세부 시작 시간 설정")
+          .font(.system(size: 17, weight: .semibold))
+          .foregroundColor(Color.gray100)
+          .padding(.bottom, 22)
+          .padding(.top, 28)
+          .padding(.horizontal, 16)
+        
+        // 제목
+        Text(taskTitle)
+          .font(.system(size: 17, weight: .semibold))
+          .foregroundColor(Color.green100)
+          .padding(.horizontal, 17)
+          .padding(.bottom, 16)
+        
+        // 선택 날짜
+        Text("\(formatted(startDate, dateOnly: true))")
+          .font(.system(size: 17, weight: .semibold))
+          .foregroundColor(Color.gray100)
+          .padding(.horizontal, 17)
+          .padding(.bottom, 16)
+        
+        // 소요 시간
+        Text("소요 시간: \(formatted(duration))")
+          .font(.system(size: 17, weight: .semibold))
+          .foregroundColor(Color.gray300)
+          .padding(.horizontal, 17)
+          .padding(.bottom, 16)
+        
+        HStack {
+          Text("시작 시간")
+            .font(.system(size: 17))
+            .foregroundColor(Color.gray100)
+            .padding(.horizontal, 17)
+            .padding(.bottom, 16)
+          
+          DatePicker(
+            "",
+            selection: $startDate,
+            displayedComponents: [.hourAndMinute]
           )
-          showConfirmation = true
-        }
-      }
-      // 애플캘린더에서 보기
-      .alert("캘린더에 반영되었습니다.", isPresented: $showConfirmation) {
-        Button("캘린더 열기") {
-          // 애플 캘린더 앱 열기
-          if let url = URL(string: "calshow://") {
-            openURL(url)
+          .datePickerStyle(.graphical)
+          .tint(.white) // 임시
+          .colorScheme(.dark) // 임시
+          .onAppear {
+            UIDatePicker.appearance().minuteInterval = 15
+          }
+          .onDisappear {
+            UIDatePicker.appearance().minuteInterval = 1
           }
         }
-        Button("작업 선택으로 돌아가기", role: .cancel) {
-          dismiss()
+        HStack {
+          Text("종료 시간")
+            .font(.system(size: 17))
+            .foregroundColor(Color.gray100)
+            .padding(.horizontal, 17)
+            .padding(.bottom, 16)
+          
+          Text(formatted(calculatedEndDate, dateOnly: false))
+            .font(.system(size: 17))
+            .foregroundColor(Color.gray100)
+            .padding(.horizontal, 17)
+            .padding(.bottom, 16)
         }
-      } message: {
-        if let slot = recommendedSlot {
-          Text("확정된 일정: \(formatted(slot.start)) ~ \(formatted(slot.end))")
-        } else {
-          Text("추천 일정 정보가 없습니다.")
+        
+        Button("이 시간으로 확정하기") {
+          requestAccess {
+            addEvent(
+              title: taskTitle,
+              startDate: startDate,
+              endDate: calculatedEndDate,
+              notes: "SlotIn에서 생성됨",
+              category: "SlotIn"
+            )
+            showConfirmation = true
+          }
+        }
+        .buttonStyle(FilledButtonStyle())
+        
+        // 애플캘린더에서 보기
+        .alert("캘린더에 반영되었습니다.", isPresented: $showConfirmation) {
+          Button("캘린더 열기") {
+            // 애플 캘린더 앱 열기
+            if let url = URL(string: "calshow://") {
+              openURL(url)
+            }
+          }
+          Button("작업 선택으로 돌아가기", role: .cancel) {
+            dismiss()
+          }
+        } message: {
+          if let slot = recommendedSlot {
+            Text("확정된 일정: \(formatted(slot.start)) ~ \(formatted(slot.end))")
+          } else {
+            Text("추천 일정 정보가 없습니다.")
+          }
         }
       }
     }
@@ -184,6 +226,20 @@ struct TimeTableViewModal: View {
   private func formatted(_ interval: TimeInterval) -> String {
     let minutes = Int(interval / 60)
     return "\(minutes / 60)시간 \(minutes % 60)분"
+  }
+  
+  struct FilledButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+      configuration.label
+        .font(.subheadline)
+        .foregroundColor(Color.green700)
+        .padding()
+        .frame(maxWidth: .infinity, minHeight: 46)
+        .background(Color.green200)
+        .cornerRadius(10)
+        .padding(.leading, 16)
+        .padding(.trailing, 16)
+    }
   }
 }
 
