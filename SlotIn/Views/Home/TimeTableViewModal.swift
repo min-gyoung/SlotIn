@@ -14,7 +14,9 @@ struct TimeTableViewModal: View {
   @Environment(\.dismiss) private var dismiss
   @State private var startDate: Date
   @State private var showConfirmation = false
-  
+  @State private var events: [EKEvent] = []
+  private let eventStore = EKEventStore()
+
   var recommendedSlot: DateInterval?
   var existingEvent: EKEvent?
   var taskTitle: String
@@ -72,9 +74,18 @@ struct TimeTableViewModal: View {
         Text("종료 시간")
         Text(formatted(calculatedEndDate, dateOnly: false))
       }
-      
+
       Button("이 시간으로 확정하기") {
-        showConfirmation = true
+        requestAccess {
+          addEvent(
+            title: taskTitle,
+            startDate: startDate,
+            endDate: calculatedEndDate,
+            notes: "SlotIn에서 생성됨",
+            category: "SlotIn"
+          )
+          showConfirmation = true
+        }
       }
       // 애플캘린더에서 보기
       .alert("캘린더에 반영되었습니다.", isPresented: $showConfirmation) {
@@ -94,6 +105,73 @@ struct TimeTableViewModal: View {
           Text("추천 일정 정보가 없습니다.")
         }
       }
+    }
+  }
+  
+  // 캘린더 접근 권한 요청
+  func requestAccess(completion: @escaping () -> Void) {
+    eventStore.requestAccess(to: .event) { granted, error in
+      print("granted: \(granted)")
+      print("error: \(String(describing: error))")
+      if granted {
+        DispatchQueue.main.async {
+          completion()
+        }
+      } else {
+        print("캘린더 접근 거부됨")
+      }
+    }
+  }
+  
+  // 카테고리별 EKCalendar 생성/가져오기
+  func getOrCreateCalendar(for category: String) -> EKCalendar {
+    if let existing = eventStore.calendars(for: .event).first(where: { $0.title == category }) {
+      return existing
+    }
+    // 일정 등록 로직
+    let calendar = EKCalendar(for: .event, eventStore: eventStore)
+    calendar.title = category
+    calendar.source = eventStore.defaultCalendarForNewEvents?.source
+    
+    do {
+      try eventStore.saveCalendar(calendar, commit: true)
+      print("캘린더 생성됨: \(category)")
+    } catch {
+      print("캘린더 생성 실패: \(error)")
+    }
+    
+    return calendar
+  }
+  
+  // 일정 추가
+  func addEvent(title: String, startDate: Date, endDate: Date, notes: String, category: String) {
+    let calendar = getOrCreateCalendar(for: category)
+    
+    let event = EKEvent(eventStore: eventStore)
+    event.title = title
+    event.startDate = startDate
+    event.endDate = endDate
+    event.notes = notes
+    event.calendar = calendar
+    
+    do {
+      try eventStore.save(event, span: .thisEvent)
+      print("일정 추가 완료 (카테고리: \(category))")
+    } catch {
+      print("일정 추가 실패: \(error)")
+    }
+  }
+  
+  // 일정 조회
+  func fetchEvents(startDate: Date, endDate: Date) {
+    let start = Calendar.current.startOfDay(for: Date())
+    let end = Calendar.current.date(byAdding: .day, value: 7, to: start)!
+    
+    let predicate = eventStore.predicateForEvents(withStart: start, end: end, calendars: nil)
+    let events = eventStore.events(matching: predicate)
+    
+    DispatchQueue.main.async {
+      self.events = events
     }
   }
   
