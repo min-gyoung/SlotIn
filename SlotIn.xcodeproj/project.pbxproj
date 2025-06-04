@@ -30,7 +30,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		6EA1A1CA2DED9223006A4D9F /* Exceptions for "SlotIn" folder in "SlotIn" target */ = {
+		4524D68A2DF0151A00FE2664 /* Exceptions for "SlotIn" folder in "SlotIn" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -43,7 +43,7 @@
 		CCED24E42DED7AF70064323A /* SlotIn */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				6EA1A1CA2DED9223006A4D9F /* Exceptions for "SlotIn" folder in "SlotIn" target */,
+				4524D68A2DF0151A00FE2664 /* Exceptions for "SlotIn" folder in "SlotIn" target */,
 			);
 			path = SlotIn;
 			sourceTree = "<group>";

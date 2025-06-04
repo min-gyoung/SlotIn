@@ -26,6 +26,7 @@ struct SelectTaskView: View {
     @State private var events: [EKEvent] = [] //불러온 이벤트들 저장
     @State private var showRecommendView: Bool = false //navigate to RecommendView
     
+    
     var body: some View {
         NavigationStack{
             ZStack{
@@ -173,8 +174,11 @@ struct SelectTaskView: View {
                     Spacer()
                 }.padding(.vertical,55)
             }.navigationDestination(isPresented: $showRecommendView){
-                RecommendView()
+                if let index = selectedEvent {
+                    DetailInputView(startDate: events[index].startDate, endDate: events[index].endDate, event: events[index])
+                }
             }
+            //일정 상세화면에 선택된 일정 인덱스로 넘겨 주기
         }
         
     }
