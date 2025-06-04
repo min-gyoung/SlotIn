@@ -58,6 +58,15 @@ struct TimeTableView: View {
   
   var body: some View {
     VStack {
+        HStack{
+            Image(systemName: "chevron.left")
+                .font(.system(size: 22))
+            Text("세부 정보 입력")
+                .font(.system(size: 17))
+            Spacer()
+        }
+        .foregroundColor(.green100)
+        
       Text("시간 선택")
         .font(.system(size: 28, weight: .bold))
         .foregroundColor(Color.gray100)
@@ -163,6 +172,7 @@ struct TimeTableView: View {
         .padding(.trailing, 8)
       }
     }
+    .navigationBarBackButtonHidden()
     .onAppear {
       fetchEventsForWeek()
     }
