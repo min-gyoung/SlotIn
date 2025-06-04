@@ -25,6 +25,7 @@ struct TimeTableView: View {
   @State private var alertTitle = ""
   @State private var alertDescription = ""
   @State private var showModal = false
+  @State private var isValidSlotSelection = false
   
   // 예시 시간대
   let preferredStartHour = 9
@@ -150,7 +151,13 @@ struct TimeTableView: View {
         title: Text(alertTitle),
         message: Text(alertDescription),
         dismissButton: .default(Text("확인"), action: {
-          showModal = true
+          // 정상 처리: 사용자가 requiredSlotCount만큼 연속된 슬롯을 선택한 경우
+          // showModal이 true가 되어 모달(TimeTableViewModal) 표시
+          if selectedSlots.count == requiredSlotCount {
+            showModal = true
+          }
+          // 비정상 처리: 선택한 슬롯 수가 부족하거나 요일이 다르거나 순차적이지 않은 경우
+          // showModal은 false 유지 (기본이 false)
         })
       )
     }
