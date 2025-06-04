@@ -11,7 +11,7 @@ import SwiftUI
 struct SlotInApp: App {
     var body: some Scene {
         WindowGroup {
-            DetailInputView(startDate: Date(), endDate: Date() + 3600, event: .init(eventStore: .init()))
+            ContentView()
         }
     }
 }
