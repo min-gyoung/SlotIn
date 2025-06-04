@@ -9,7 +9,14 @@ import SwiftUI
 
 struct TaskDetailView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack{
+            Color.gray700.ignoresSafeArea()
+            VStack{
+                Text("작업 세부 정보")
+                    .foregroundColor(.gray100)
+                
+            }
+        }
     }
 }
 
