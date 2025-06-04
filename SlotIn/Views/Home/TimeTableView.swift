@@ -28,7 +28,9 @@ struct TimeTableView: View {
   @State private var alertDescription = ""
   @State private var showModal = false
   @State private var isValidSlotSelection = false
-
+  @State private var events: [EKEvent] = []
+  private let eventStore = EKEventStore()
+  
   // 예시 시간대
   var startHourValue: Int {
     Calendar.current.component(.hour, from: startHour)
@@ -38,7 +40,7 @@ struct TimeTableView: View {
     Calendar.current.component(.hour, from: endHour)
   }
   
-
+  
   init(taskTitle: String, startTime: Date, endTime: Date, startHour: Date, endHour: Date) {
     self.taskTitle = taskTitle
     self.startTime = startTime
@@ -161,7 +163,9 @@ struct TimeTableView: View {
         .padding(.trailing, 8)
       }
     }
-    
+    .onAppear {
+      fetchEventsForWeek()
+    }
     .padding()
     .alert(isPresented: $showAlert) {
       Alert(
@@ -203,50 +207,50 @@ struct TimeTableView: View {
   @ViewBuilder
   private func slotButton(dayIndex: Int, hour: Int) -> some View {
     let key = "\(dayIndex)-\(hour)"
+    let date = Calendar.current.date(bySettingHour: hour, minute: 0, second: 0, of: weekDates[dayIndex])!
+    
+    let isAvailable = !hasEvent(at: date)
+    let isSelected = selectedSlots.contains(key)
+    
     Button(action: {
-      if let start = selectedStartSlot {
-        // 같은 요일을 클릭했는지 확인
-        if start.day == dayIndex {
-          // 시간 범위 정렬
-          let range = start.hour <= hour ? start.hour...hour : hour...start.hour
-          let slotCount = range.count
-          
-          // 선택한 시간 범위 확인
-          if slotCount == requiredSlotCount {
-            // 정상적으로 선택된 경우
-            // 기존 선택 제거 후 새로 선택
-            selectedSlots.removeAll()
-            for h in range {
-              selectedSlots.insert("\(dayIndex)-\(h)")
+      if isAvailable {
+        // 기존 slotButton 동작 유지
+        if let start = selectedStartSlot {
+          if start.day == dayIndex {
+            let range = start.hour <= hour ? start.hour...hour : hour...start.hour
+            let slotCount = range.count
+            
+            if slotCount == requiredSlotCount {
+              selectedSlots.removeAll()
+              for h in range {
+                selectedSlots.insert("\(dayIndex)-\(h)")
+              }
+              isValidSlotSelection = true
+              alertTitle = taskTitle
+              alertDescription = formattedTimeRange(for: dayIndex, from: range.lowerBound, to: range.upperBound)
+            } else {
+              isValidSlotSelection = false
+              alertTitle = "슬롯 선택 불가"
+              alertDescription = "\(requiredSlotCount)시간 연속으로 선택해주세요."
             }
-            isValidSlotSelection = true
-            // 선택 칸 수가 부족한 경우
-            alertTitle = taskTitle
-            alertDescription = formattedTimeRange(for: dayIndex, from: range.lowerBound, to: range.upperBound)
           } else {
             isValidSlotSelection = false
-            alertTitle = "슬롯 선택 불가"
-            alertDescription = "\(requiredSlotCount)시간 연속으로 선택해주세요."
+            alertTitle = "선택 불가"
+            alertDescription = "같은 요일 내에서만 선택 가능합니다."
           }
+          selectedStartSlot = nil
+          showAlert = true
         } else {
-          isValidSlotSelection = false
-          alertTitle = "선택 불가"
-          alertDescription = "같은 요일 내에서만 선택 가능합니다."
+          selectedStartSlot = (day: dayIndex, hour: hour)
         }
-        
-        // 초기화, 알림
-        selectedStartSlot = nil
-        showAlert = true
-      } else {
-        selectedStartSlot = (day: dayIndex, hour: hour)
       }
     }) {
       Text("")
         .frame(width: 44, height: 44)
         .background(
-          selectedSlots.contains(key)
-          ? Color.green.opacity(0.7)
-          : Color.gray.opacity(0.2)
+          isSelected
+          ? Color.green300
+          : (isAvailable ? Color.green100 : Color.gray.opacity(0.2))
         )
         .cornerRadius(4)
     }
@@ -268,6 +272,24 @@ struct TimeTableView: View {
     timeFormatter.dateFormat = "HH:mm"
     
     return "\(dateString) \(timeFormatter.string(from: startTime)) - \(timeFormatter.string(from: endTime))"
+  }
+  
+  // 이벤트 호출
+  private func fetchEventsForWeek() {
+    let startOfWeek = currentWeekStartDate
+    let endOfWeek = Calendar.current.date(byAdding: .day, value: 7, to: startOfWeek)!
+    let predicate = eventStore.predicateForEvents(withStart: startOfWeek, end: endOfWeek, calendars: nil)
+    events = eventStore.events(matching: predicate)
+  }
+  
+  // 이벤트가 있는지 확인하는 함수
+  private func hasEvent(at date: Date) -> Bool {
+    for event in events {
+      if event.startDate <= date && date < event.endDate {
+        return true
+      }
+    }
+    return false
   }
 }
 
