@@ -39,22 +39,28 @@ struct SelectTaskView: View {
                         Text("작업 선택")
                             .foregroundColor(.gray100)
                             .font(.system(size:28, weight: .bold))
-                            .padding(.horizontal, 16)
-                            .padding(.vertical,10)
+                            .padding(.leading,16)
+                          
+                            
                         Spacer()
                     }
+                    .frame(width: 393, height: 54)
+                 
+                    
                     //2. "기존 일정이 등록된 날짜를 선택해주세요" text
                     HStack{
                         Text("기존 일정이 등록된 날짜를 선택해주세요")
                             .font(.system(size:17, weight:.semibold))
                             .foregroundColor(.gray100)
-                            .padding(.horizontal, 17)
-                            .padding(.vertical, 14)
                         Spacer()
                     }
+                    .frame(width: 360, height: 22)
+                    .padding(.vertical, 12)
+
                     //3. datepicker
                     HStack{
                         Spacer()
+                        
                         Button{
                             showPicker.toggle()
                             dateSelect = true
@@ -65,18 +71,21 @@ struct SelectTaskView: View {
                                 .font(.system(size:16))
                                 .background(.gray500)
                                 .cornerRadius(6)
+                               
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.bottom,28)
-                        
+                       
                     }
+                    .frame(width: 360, height: 22)
+                    .padding(.bottom,28)
+                    
+                    
                     if showPicker{
                         DatePicker(
                             "",
                             selection: $date,
                             displayedComponents: [.date]
                         )
-                        .frame(width:361, height: 340)
+                        .frame(width:361, height: 400)
                         .padding(5)
                         .background(.gray500)
                         .datePickerStyle(.graphical)
@@ -87,8 +96,8 @@ struct SelectTaskView: View {
                             selectedEvent = nil //이벤트(인덱스) 선택 초기화
                             showPicker = false // 자동으로 datepicker 닫힘
                         }
-                       
                     }
+                    
                     //4. "date에 등록된 작업 목록" text : datepicker로 날짜를 고른 후 공개
                     if !showPicker && dateSelect{
                         VStack{
@@ -129,7 +138,7 @@ struct SelectTaskView: View {
                                             }
                                         }
                                         .cornerRadius(10)
-                                        .padding(.horizontal, 17)
+                                        .padding(.leading, 17)
                                         .padding(.top, 4)
                                         
                                         Spacer()
@@ -141,6 +150,7 @@ struct SelectTaskView: View {
                                     
                                     
                                 }
+                                
                             } else if dateSelect {
                                 Text("해당 날짜에 등록된 작업이 없습니다")
                                     .foregroundColor(.gray300)
@@ -156,7 +166,7 @@ struct SelectTaskView: View {
                                     showRecommendView = true
                                 }
                                } label: {
-                                   Text("가능한 시간 추천 받기")
+                                   Text("작업 세부 정보 등록하기")
                                        .frame(width: 361, height: 46)
                                        .background(
                                         selectedEvent != nil  ? .green200 :
@@ -166,18 +176,23 @@ struct SelectTaskView: View {
                                         selectedEvent != nil ? .green700 : .gray100)
                                        .font(.system(size: 17, weight: .medium))
                                        .padding(.horizontal, 16)
-                                       .padding(.bottom, 20)
                                }
                         }
                        
                     }
                     Spacer()
-                }.padding(.vertical,55)
-            }.navigationDestination(isPresented: $showRecommendView){
+                }
+                .padding(.top,55)
+                .padding(.bottom,43)
+                
+                
+            }
+            .navigationDestination(isPresented: $showRecommendView){
                 if let index = selectedEvent {
                     DetailInputView(startDate: events[index].startDate, endDate: events[index].endDate, event: events[index])
                 }
             }
+           
             //일정 상세화면에 선택된 일정 인덱스로 넘겨 주기
         }
         
@@ -186,8 +201,7 @@ struct SelectTaskView: View {
     // EventKit에서 이벤트 가져오는 함수
     func fetchEvents(for date: Date) {
         let store = EKEventStore() //캘린더 접근, 이벤트 조회 가능
-        
-        store.requestAccess(to: .event) { granted, error in
+            store.requestAccess(to: .event) { granted, error in
             guard granted else {
                 print("캘린더 접근 권한 없음")
                 return
