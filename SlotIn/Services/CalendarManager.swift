@@ -23,21 +23,6 @@ class CalendarManager: ObservableObject {
     )
   }
   
-  // 권한 요청
-  func requestAccess(completion: @escaping () -> Void) {
-    eventStore.requestAccess(to: .event) { granted, error in
-      print("granted: \(granted)")
-      print("error: \(String(describing: error))")
-      if granted {
-        DispatchQueue.main.async {
-          completion()
-        }
-      } else {
-        print("캘린더 접근 거부됨")
-      }
-    }
-  }
-  
   // 앱 생성 캘린더 가져오기
   // title prefix 조건으로 필터링 (ex. pip~으로 시작하는 캘린더만)
   func getCalendars(prefix: String = "") -> [EKCalendar] {
