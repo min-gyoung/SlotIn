@@ -22,6 +22,7 @@ struct TimeTableView: View {
   @State private var alertMessage = ""
   @State private var alertTitle = ""
   @State private var alertDescription = ""
+  @State private var showModal = false
   
   // 예시 시간대
   let preferredStartHour = 9
@@ -143,11 +144,20 @@ struct TimeTableView: View {
       Alert(
         title: Text(alertTitle),
         message: Text(alertDescription),
-        dismissButton: .default(Text("확인"))
+        dismissButton: .default(Text("확인"), action: {
+          showModal = true
+        })
+      )
+    }
+    
+    .sheet(isPresented: $showModal) {
+      TimeTableViewModal(
+        selectedTask: "서강대학교 홍보 영상 기획 회의",
+        startTime: Calendar.current.date(bySettingHour: 9, minute: 30, second: 0, of: Date())!,
+        endTime: Calendar.current.date(bySettingHour: 11, minute: 15, second: 0, of: Date())!
       )
     }
   }
-  
   // 버튼 뷰
   @ViewBuilder
   private func slotButton(dayIndex: Int, hour: Int) -> some View {
