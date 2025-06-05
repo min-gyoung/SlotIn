@@ -18,12 +18,12 @@ import SwiftData
 @Model
 class Task{
     var title: String
-    var time: Int
+    var time: String
     var startDate: Date
     var endDate: Date
-    var preferredTime: Int
+    var preferredTime: String
     
-    init(title: String, time: Int, startDate: Date, endDate: Date, preferredTime: Int) {
+    init(title: String, time: String, startDate: Date, endDate: Date, preferredTime: String) {
         self.title = title
         self.time = time
         self.startDate = startDate
