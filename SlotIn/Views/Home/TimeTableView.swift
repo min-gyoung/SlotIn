@@ -4,11 +4,10 @@
 //
 // Created by 김민경 on 6/2/25.
 //
-//
- 
+
 import SwiftUI
 import EventKit
- 
+
 struct TimeTableView: View {
   let startTime: Date
   let endTime: Date
@@ -28,11 +27,11 @@ struct TimeTableView: View {
   @State private var showModal = false
   @State private var isValidSlotSelection = false
   @State private var events: [EKEvent] = []
+  @State private var selectedStartDate: Date? = nil
+  @State private var selectedEndDate: Date? = nil
   private let eventStore = EKEventStore()
-    
-    @State var event: EKEvent
+  @State var event: EKEvent
   
-  // 예시 시간대
   var startHourValue: Int {
     Calendar.current.component(.hour, from: startHour)
   }
@@ -41,8 +40,7 @@ struct TimeTableView: View {
     Calendar.current.component(.hour, from: endHour)
   }
   
-  
-    init(startTime: Date, endTime: Date, startHour: Date, endHour: Date, event: EKEvent) {
+  init(startTime: Date, endTime: Date, startHour: Date, endHour: Date, event: EKEvent) {
     self.startTime = startTime
     self.endTime = endTime
     self.startHour = startHour
@@ -66,7 +64,7 @@ struct TimeTableView: View {
         .padding(.top, 12)
         .padding(.horizontal, 16)
       
-        Text(event.title)
+      Text(event.title)
         .font(.system(size: 17, weight: .semibold))
         .foregroundColor(Color.green100)
         .padding(.horizontal, 17)
@@ -180,22 +178,24 @@ struct TimeTableView: View {
       )
     }
     .sheet(isPresented: $showModal) {
-      TimeTableViewModal(
-        taskTitle: event.title,
-        startTime: startTime,
-        endTime: endTime,
-        duration: TimeInterval(requiredSlotCount * 60 * 60)
-      )
+      if let start = selectedStartDate, let end = selectedEndDate {
+        TimeTableViewModal(
+          taskTitle: event.title,
+          startTime: start,
+          endTime: end,
+          duration: end.timeIntervalSince(start)
+        )
+      }
     }
     .background(Color.gray700.edgesIgnoringSafeArea(.all))
   }
   
   var model: TimeTableModel {
-      TimeTableModel(startDate: event.startDate, endDate: event.endDate)
+    TimeTableModel(startDate: event.startDate, endDate: event.endDate)
   }
   
   var requiredSlotCount: Int {
-      let diff = Calendar.current.dateComponents([.minute], from: event.startDate, to: event.endDate)
+    let diff = Calendar.current.dateComponents([.minute], from: event.startDate, to: event.endDate)
     let totalMinutes = diff.minute ?? 0
     return Int(ceil(Double(totalMinutes) / 60.0))
   }
@@ -227,7 +227,7 @@ struct TimeTableView: View {
                 selectedSlots.insert("\(dayIndex)-\(h)")
               }
               isValidSlotSelection = true
-                alertTitle = event.title
+              alertTitle = event.title
               alertDescription = formattedTimeRange(for: dayIndex, from: range.lowerBound, to: range.upperBound)
             } else {
               isValidSlotSelection = false
@@ -260,10 +260,14 @@ struct TimeTableView: View {
   // 날짜 및 시간 범위 포맷 함수
   private func formattedTimeRange(for dayIndex: Int, from startHour: Int, to endHour: Int) -> String {
     let date = weekDates[dayIndex]
+    showAlert = true
     let calendar = Calendar.current
     let formatter = DateFormatter()
     formatter.dateFormat = "M월 d일(E)"
     formatter.locale = Locale(identifier: "ko_KR")
+    
+    selectedStartDate = calendar.date(bySettingHour: startHour, minute: 0, second: 0, of: date)
+    selectedEndDate = calendar.date(bySettingHour: endHour + 1, minute: 0, second: 0, of: date)
     
     let dateString = formatter.string(from: date)
     let startTime = calendar.date(bySettingHour: startHour, minute: 0, second: 0, of: date)!
@@ -293,7 +297,7 @@ struct TimeTableView: View {
     return false
   }
 }
- 
+
 #Preview {
   TimeTableView(
     startTime: Calendar.current.date(bySettingHour: 9, minute: 30, second: 0, of: Date())!,
