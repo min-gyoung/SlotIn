@@ -2,16 +2,19 @@
 //  DetailInputView.swift
 //  SlotIn
 //
-//  Created by 김민경 on 6/2/25.
+//  Created by 윤보라 on 6/3/25.
 //
 
 import SwiftUI
 import EventKit
+import SwiftData
 
 struct DetailInputView: View {
     
     //뒤로가기
     @Environment(\.dismiss) var dismiss
+    
+    @Environment(\.modelContext) private var context //swiftdata
 
     // 어떤 피커(날짜/시간)가 현재 활성화되어 있는지를 나타내는 상태 변수
     // nil일 경우, 아무 피커도 열려 있지 않다는 뜻
@@ -21,6 +24,8 @@ struct DetailInputView: View {
     @State private var calendar: Calendar = .current //새로운 변수 추가
     @State var startDate: Date
     @State var endDate: Date
+    
+    //하루 중 선호하는 시간대
     @State var startTime: Date = {
         var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
         components.hour = 9
@@ -40,6 +45,7 @@ struct DetailInputView: View {
     
     //다음 화면으로 이동하는 것을 관리하는 변수
     @State private var isGoingTimeTable: Bool = false
+    @State private var showTaskView: Bool = false // navigate to TaskView
     
     //선택된 일정
     @State var event: EKEvent
@@ -218,6 +224,32 @@ struct DetailInputView: View {
                     .fontWeight(.semibold)
                     .alert("작업이 보류되었습니다.", isPresented: $showPopover) {
                             Button(action: {
+                                let formatter = DateFormatter()
+                                formatter.dateFormat = "HH:mm"
+                                
+                                //하루 중 선호 시간대(preferredTime)
+                                let preferred = "\(formatter.string(from: startTime)) ~ \(formatter.string(from: endTime))"
+                                
+                                //소요 시간(time) 계산: 분 단위
+                                let interval = endDate.timeIntervalSince(startDate)
+                                let minutes = Int(interval/60)
+                                
+                                //소요 시간을 문자열로 변환
+                                let durationFormatter = DateComponentsFormatter()
+                                    durationFormatter.allowedUnits = [.hour, .minute]
+                                    durationFormatter.unitsStyle = .full
+                                    let durationString = durationFormatter.string(from: interval) ?? ""
+                                
+                                let historyTask = Task(
+                                            title: event.title,
+                                            time: durationString,
+                                            startDate: event.startDate,
+                                            endDate: event.endDate,
+                                            preferredTime: preferred
+                                )
+                                context.insert(historyTask)
+                                showTaskView = true
+                                
                                 print("보관함으로 넘어가기")
                             }, label: {
                                 Text("보관함에서 보기")
@@ -236,7 +268,10 @@ struct DetailInputView: View {
                             .fontWeight(.semibold)
                     }
                     .buttonStyle(FilledButtonStyle())
-                    .navigationDestination(isPresented: $isGoingTimeTable) {   
+                    .navigationDestination(isPresented: $showTaskView){
+                        TaskView()
+                    }
+                    .navigationDestination(isPresented: $isGoingTimeTable) {
                         TimeTableView(startTime: startDate, endTime: endDate, startHour: startTime, endHour: endTime, event: event)
                     }
                 }

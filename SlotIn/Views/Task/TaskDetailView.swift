@@ -10,7 +10,9 @@ import SwiftUI
 struct TaskDetailView: View {
     
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
     
+    let task: Task
     var body: some View {
         ZStack{
             Color.gray700.ignoresSafeArea()
@@ -44,7 +46,7 @@ struct TaskDetailView: View {
                         .padding(.horizontal,15)
                         
                     
-                    Text("서강대학교 홍보영상 기획 회의")
+                    Text(task.title)
                         .foregroundColor(.white)
                         .padding(.horizontal,16)
                         .font(.system(size:16, weight: .semibold))
@@ -63,7 +65,7 @@ struct TaskDetailView: View {
                         .padding(.horizontal,15)
                         
                     
-                    Text("3시간")
+                    Text(task.time)
                         .foregroundColor(.white)
                         .padding(.horizontal,16)
                         .font(.system(size:16, weight: .semibold))
@@ -81,7 +83,7 @@ struct TaskDetailView: View {
                         .padding(.horizontal,15)
                         
                     
-                    Text("May 28, 2025")
+                    Text("\(task.startDate.formatted(date:.long, time:.omitted))")
                         .foregroundColor(.white)
                         .padding(.horizontal,16)
                         .font(.system(size:16, weight: .semibold))
@@ -99,7 +101,7 @@ struct TaskDetailView: View {
                         .padding(.horizontal,15)
                         
                     
-                    Text("Jun 5, 2025")
+                    Text("\(task.endDate.formatted(date: .long, time:.omitted))")
                         .foregroundColor(.white)
                         .padding(.horizontal,16)
                         .font(.system(size:16, weight: .semibold))
@@ -117,7 +119,7 @@ struct TaskDetailView: View {
                         .padding(.horizontal,15)
                         
                     
-                    Text("9:00 - 18:00")
+                    Text(task.preferredTime)
                         .foregroundColor(.white)
                         .padding(.horizontal,16)
                         .font(.system(size:16, weight: .semibold))
@@ -155,6 +157,6 @@ struct TaskDetailView: View {
     }
 }
 
-#Preview {
-    TaskDetailView()
-}
+//#Preview {
+//    TaskDetailView()
+//}

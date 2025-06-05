@@ -6,9 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct TaskView: View {
  
+    @Query(sort: \Task.startDate, order: .reverse) var tasks: [Task]
+    
     var body: some View {
         
         NavigationView{
@@ -30,19 +33,18 @@ struct TaskView: View {
                       
                     
                     List{
-                        
-                        NavigationLink(destination: TaskDetailView()){
-                            //eventTitle
-                            //text("마감기한: \(endDate)"
-                            VStack(alignment:.leading){
-                                Text("서강대학교 홍보 영상 기획 회의")
-                                    .font(.system(size:17, weight: .semibold))
-                                    .padding(.bottom,2)
-                                Text("마감 기한: June 5, 2025")
-                                    .font(.system(size:16))
+                        ForEach(tasks){ task in
+                            NavigationLink(destination: TaskDetailView(task: task)){
+                                VStack(alignment:.leading){
+                                    Text(task.title)
+                                        .font(.system(size:17, weight: .semibold))
+                                        .padding(.bottom,2)
+                                    Text("마감기한: \(task.endDate.formatted(date:.long, time: .omitted))")
+                                        .font(.system(size:16))
+                                    
+                                }
+                                .padding(.horizontal,-10)
                             }
-                            .padding(.horizontal,-10)
-                            
                             
                         }
                         .padding(.horizontal,28)

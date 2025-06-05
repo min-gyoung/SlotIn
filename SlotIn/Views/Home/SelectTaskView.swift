@@ -24,7 +24,7 @@ struct SelectTaskView: View {
     @State private var selectedEvent: Int? = nil //선택한 작업(인덱스)
     
     @State private var events: [EKEvent] = [] //불러온 이벤트들 저장
-    @State private var showRecommendView: Bool = false //navigate to RecommendView
+    @State private var showDetailInputView: Bool = false //navigate to DetailInputView
     
     
     var body: some View {
@@ -164,9 +164,9 @@ struct SelectTaskView: View {
                             Spacer()
                             
                             Button {
-                                   //navigate to RecommendView
+                                   //navigate to DetailInputView
                                 if selectedEvent != nil{
-                                    showRecommendView = true
+                                    showDetailInputView = true
                                 }
                                } label: {
                                    Text("작업 세부 정보 등록하기")
@@ -184,13 +184,8 @@ struct SelectTaskView: View {
                        
                     }
                     Spacer()
-                }
-                .padding(.top,55)
-                .padding(.bottom,43)
-                
-                
-            }
-            .navigationDestination(isPresented: $showRecommendView){
+                }.padding(.vertical,55)
+            }.navigationDestination(isPresented: $showDetailInputView){
                 if let index = selectedEvent {
                     DetailInputView(startDate: events[index].startDate, endDate: events[index].endDate, event: events[index])
                 }
@@ -198,7 +193,6 @@ struct SelectTaskView: View {
            
             //일정 상세화면에 선택된 일정 인덱스로 넘겨 주기
         }
-        
     }
     
     // EventKit에서 이벤트 가져오는 함수
