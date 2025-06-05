@@ -2,7 +2,7 @@
 //  DetailInputView.swift
 //  SlotIn
 //
-//  Created by 김민경 on 6/2/25.
+//  Created by 윤보라 on 6/3/25.
 //
 
 import SwiftUI
@@ -40,6 +40,7 @@ struct DetailInputView: View {
     
     //다음 화면으로 이동하는 것을 관리하는 변수
     @State private var isGoingTimeTable: Bool = false
+    @State private var showTaskView: Bool = false // navigate to TaskView
     
     //선택된 일정
     @State var event: EKEvent
@@ -218,6 +219,7 @@ struct DetailInputView: View {
                     .fontWeight(.semibold)
                     .alert("작업이 보류되었습니다.", isPresented: $showPopover) {
                             Button(action: {
+                                showTaskView = true
                                 print("보관함으로 넘어가기")
                             }, label: {
                                 Text("보관함에서 보기")
@@ -236,7 +238,10 @@ struct DetailInputView: View {
                             .fontWeight(.semibold)
                     }
                     .buttonStyle(FilledButtonStyle())
-                    .navigationDestination(isPresented: $isGoingTimeTable) {   
+                    .navigationDestination(isPresented: $showTaskView){
+                        TaskView()
+                    }
+                    .navigationDestination(isPresented: $isGoingTimeTable) {
                         TimeTableView(startTime: startDate, endTime: endDate, startHour: startTime, endHour: endTime, event: event)
                     }
                 }
