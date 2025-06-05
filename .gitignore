@@ -61,3 +61,6 @@ DerivedData/
 ### Projects ###
 *.xcodeproj
 *.xcworkspace
+
+# Xcode 사용자별 데이터 무시
+*.xcuserstate
