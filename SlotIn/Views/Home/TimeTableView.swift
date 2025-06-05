@@ -191,7 +191,11 @@ struct TimeTableView: View {
   }
   
   var model: TimeTableModel {
-      TimeTableModel(startDate: event.startDate, endDate: event.endDate)
+      guard let start = event.startDate, let end = event.endDate else {
+                // fallback: 현재 시간을 기준으로 임시 모델 리턴
+                return TimeTableModel(startDate: Date(), endDate: Date().addingTimeInterval(3600))
+            }
+            return TimeTableModel(startDate: start, endDate: end)
   }
   
   var requiredSlotCount: Int {
@@ -210,7 +214,7 @@ struct TimeTableView: View {
     let key = "\(dayIndex)-\(hour)"
     let date = Calendar.current.date(bySettingHour: hour, minute: 0, second: 0, of: weekDates[dayIndex])!
     
-    let isAvailable = !hasEvent(at: date)
+    let isAvailable = !hasEvent(at: date) && !isOverDate(at: date)
     let isSelected = selectedSlots.contains(key)
     
     Button(action: {
@@ -292,6 +296,13 @@ struct TimeTableView: View {
     }
     return false
   }
+    
+    private func isOverDate(at date: Date) -> Bool {
+        if startTime <= date && date <= endTime {
+            return false
+      }
+      return true
+    }
 }
  
 #Preview {
