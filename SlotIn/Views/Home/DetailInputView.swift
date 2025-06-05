@@ -231,7 +231,7 @@ struct DetailInputView: View {
                                 let preferred = "\(formatter.string(from: startTime)) ~ \(formatter.string(from: endTime))"
                                 
                                 //소요 시간(time) 계산: 분 단위
-                                let interval = endDate.timeIntervalSince(startDate)
+                                let interval = event.endDate.timeIntervalSince(event.startDate)
                                 let minutes = Int(interval/60)
                                 
                                 //소요 시간을 문자열로 변환
