@@ -194,11 +194,11 @@ struct TimeTableView: View {
   }
   
   var model: TimeTableModel {
-      guard let start = event.startDate, let end = event.endDate else {
-                // fallback: 현재 시간을 기준으로 임시 모델 리턴
-                return TimeTableModel(startDate: Date(), endDate: Date().addingTimeInterval(3600))
-            }
-            return TimeTableModel(startDate: start, endDate: end)
+    guard let start = event.startDate, let end = event.endDate else {
+      // fallback: 현재 시간을 기준으로 임시 모델 리턴
+      return TimeTableModel(startDate: Date(), endDate: Date().addingTimeInterval(3600))
+    }
+    return TimeTableModel(startDate: start, endDate: end)
   }
   
   var requiredSlotCount: Int {
@@ -261,7 +261,16 @@ struct TimeTableView: View {
         }
       }
     }) {
-      Text("")
+      
+      // 셀에 해당하는 요일, 시간 계산
+      let cellDateTime = dateFromWeekAndHour(weekStart: currentWeekStartDate, dayOffset: dayIndex, hour: hour)
+      
+      // 셀에 일정 제목 표시
+      let matchingEvent = events.first(where: {
+        $0.startDate <= cellDateTime && cellDateTime < $0.endDate
+      })
+      
+      Text(matchingEvent?.title ?? "")
         .frame(width: 44, height: 44)
         .background(
           isSelected
@@ -270,6 +279,15 @@ struct TimeTableView: View {
         )
         .cornerRadius(4)
     }
+  }
+  
+  // 요일 시작 계산 함수
+  func dateFromWeekAndHour(weekStart: Date, dayOffset: Int, hour: Int) -> Date {
+    var components = Calendar.current.dateComponents([.year, .month, .day], from: weekStart)
+    components.day! += dayOffset
+    components.hour = hour
+    components.minute = 0
+    return Calendar.current.date(from: components)!
   }
   
   // 날짜 및 시간 범위 포맷 함수
@@ -311,13 +329,14 @@ struct TimeTableView: View {
     }
     return false
   }
-    
-    private func isOverDate(at date: Date) -> Bool {
-        if startTime <= date && date <= endTime {
-            return false
-      }
-      return true
+  
+  // 특정 date가 범위를 벗어났는지 확인
+  private func isOverDate(at date: Date) -> Bool {
+    if startTime <= date && date <= endTime {
+      return false
     }
+    return true
+  }
 }
 
 #Preview {
