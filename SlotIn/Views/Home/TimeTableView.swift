@@ -78,6 +78,7 @@ struct TimeTableView: View {
       
       HStack {
         Button(action: {
+            selectedSlots.removeAll()
           currentWeekStartDate = TimeTableModel.previousWeek(from: currentWeekStartDate)
         }) {
           Image(systemName: "chevron.left")
@@ -98,7 +99,9 @@ struct TimeTableView: View {
         Spacer()
         
         Button(action: {
+            selectedSlots.removeAll()
           currentWeekStartDate = TimeTableModel.nextWeek(from: currentWeekStartDate)
+            
         }) {
           Image(systemName: "chevron.right")
             .font(.system(size: 17, weight: .semibold))
@@ -220,33 +223,41 @@ struct TimeTableView: View {
     Button(action: {
       if isAvailable {
         // 기존 slotButton 동작 유지
+          selectedStartSlot = (day: dayIndex, hour: hour)
         if let start = selectedStartSlot {
-          if start.day == dayIndex {
-            let range = start.hour <= hour ? start.hour...hour : hour...start.hour
+            let range = start.hour...hour + requiredSlotCount - 1
             let slotCount = range.count
+              print(range)
+              print(slotCount)
             
-            if slotCount == requiredSlotCount {
+              if hour + requiredSlotCount <= endHourValue {
               selectedSlots.removeAll()
               for h in range {
-                selectedSlots.insert("\(dayIndex)-\(h)")
+                  let tempDate = Calendar.current.date(bySettingHour: h, minute: 0, second: 0, of: weekDates[dayIndex])!
+                  let isAble = !hasEvent(at: tempDate) && !isOverDate(at: tempDate)
+                  if isAble {
+                      selectedSlots.insert("\(dayIndex)-\(h)")
+                      isValidSlotSelection = true
+                      alertTitle = event.title
+                      alertDescription = formattedTimeRange(for: dayIndex, from: range.lowerBound, to: range.upperBound)
+                  } else {
+                      isValidSlotSelection = false
+                      alertTitle = "슬롯 선택 불가"
+                      alertDescription = "중간에 존재하는 일정 존재"
+                  }
               }
-              isValidSlotSelection = true
-              alertTitle = event.title
-              alertDescription = formattedTimeRange(for: dayIndex, from: range.lowerBound, to: range.upperBound)
+              
             } else {
               isValidSlotSelection = false
               alertTitle = "슬롯 선택 불가"
               alertDescription = "\(requiredSlotCount)시간 연속으로 선택해주세요."
             }
-          } else {
-            isValidSlotSelection = false
-            alertTitle = "선택 불가"
-            alertDescription = "같은 요일 내에서만 선택 가능합니다."
-          }
           selectedStartSlot = nil
           showAlert = true
         } else {
-          selectedStartSlot = (day: dayIndex, hour: hour)
+          
+            print("오류")
+            
         }
       }
     }) {
