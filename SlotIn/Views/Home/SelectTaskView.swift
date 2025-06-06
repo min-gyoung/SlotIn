@@ -94,7 +94,7 @@ struct SelectTaskView: View {
                         .datePickerStyle(.graphical)
                         .cornerRadius(13)
                         .labelsHidden()
-                        .onChange(of: date) {newDate in
+                        .onChange(of: date) {newDate in //수정 필요
                             fetchEvents(for:newDate) //날짜 바뀔때마다 이벤트 갱신(누를때마다 되어서 datepicker를 끄면 이미 변경됨)
                             selectedEvent = nil //이벤트(인덱스) 선택 초기화
                             showPicker = false // 자동으로 datepicker 닫힘
@@ -198,7 +198,7 @@ struct SelectTaskView: View {
     // EventKit에서 이벤트 가져오는 함수
     func fetchEvents(for date: Date) {
         let store = EKEventStore() //캘린더 접근, 이벤트 조회 가능
-            store.requestAccess(to: .event) { granted, error in
+            store.requestAccess(to: .event) { granted, error in //수정 필요
             guard granted else {
                 print("캘린더 접근 권한 없음")
                 return
@@ -231,3 +231,4 @@ struct SelectTaskView: View {
 #Preview {
     SelectTaskView()
 }
+
