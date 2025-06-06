@@ -49,6 +49,32 @@ struct SelectTaskView: View {
                             Text("기존 일정이 등록된 날짜를 선택해주세요")
                                 .font(.system(size:17, weight:.semibold))
                                 .foregroundColor(.gray100)
+                        Spacer()
+                    }
+                    .frame(width: 360, height: 22)
+                    .padding(.vertical, 12)
+
+                    //3. datepicker
+                    HStack{
+                        Spacer()
+                        
+                        Button{
+                            showPicker.toggle()
+                            dateSelect = true
+                            fetchEvents(for:date) //날짜 선택될 때마다 이벤트 불러오기
+                        } label:{
+                            Text(date.formatted(date:.long, time:.omitted))
+                                .frame(width:127, height: 34)
+                                .font(.system(size:16))
+                                .background(.gray500)
+                                .cornerRadius(6)
+                               
+                        }
+                        //2. "기존 일정이 등록된 날짜를 선택해주세요" text
+                        HStack{
+                            Text("기존 일정이 등록된 날짜를 선택해주세요")
+                                .font(.system(size:17, weight:.semibold))
+                                .foregroundColor(.gray100)
                                 .padding(.horizontal, geometry.size.width * 0.0432)
                                 .padding(.vertical, geometry.size.height * 0.0164)
                             Spacer()
@@ -171,6 +197,13 @@ struct SelectTaskView: View {
                                         .padding(.horizontal, geometry.size.width * 0.0407)
                                         .padding(.bottom, geometry.size.height * 0.0234)
                                 }
+                            }
+                            
+                            } else if dateSelect {
+                                Text("해당 날짜에 등록된 작업이 없습니다")
+                                    .foregroundColor(.gray300)
+                                    .padding(20)
+                                   
                             }
                             
                         }
