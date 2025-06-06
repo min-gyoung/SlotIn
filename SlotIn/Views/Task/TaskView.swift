@@ -38,7 +38,6 @@ struct TaskView: View {
                                 let task = tasks[index]
                                 context.delete(task)
                             }
-                        }
                         .scrollContentBackground(.hidden)
                         .background(.clear)
                         .padding(.horizontal,28)
@@ -58,3 +57,4 @@ struct TaskView: View {
 #Preview {
     TaskView()
 }
+

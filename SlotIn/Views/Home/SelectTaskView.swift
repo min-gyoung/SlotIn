@@ -194,9 +194,6 @@ struct SelectTaskView: View {
                                                 .padding(.leading, -geometry.size.width * 0.1526)
                                                 .opacity(selectedEvent == index ? 1:0) // image가 자리를 찾이하고 있어서, 눌러도 크기 안 달라짐
                                         }
-                                        .cornerRadius(10)
-                                        .padding(.leading, 17)
-                                        .padding(.top, 4)
                                         
                                         
                                     }
@@ -237,25 +234,6 @@ struct SelectTaskView: View {
                                    
                             }
                             
-                            Spacer()
-                            
-                            Button {
-                                   //navigate to DetailInputView
-                                if selectedEvent != nil{
-                                    showDetailInputView = true
-                                }
-                               } label: {
-                                   Text("작업 세부 정보 등록하기")
-                                       .frame(width: 361, height: 46)
-                                       .background(
-                                        selectedEvent != nil  ? .green200 :
-                                        .gray400)
-                                       .cornerRadius(8)
-                                       .foregroundColor(
-                                        selectedEvent != nil ? .green700 : .gray100)
-                                       .font(.system(size: 17, weight: .medium))
-                                       .padding(.horizontal, 16)
-                               }
                         }
                         Spacer()
                     }.padding(.vertical,geometry.size.height * 0.0645)
@@ -263,19 +241,10 @@ struct SelectTaskView: View {
                     if let index = selectedEvent {
                         DetailInputView(startDate: events[index].startDate, endDate: events[index].endDate, event: events[index])
                     }
-                    Spacer()
-                }.padding(.vertical,55)
-            }.navigationDestination(isPresented: $showDetailInputView){
-                if let index = selectedEvent {
-                    DetailInputView(startDate: events[index].startDate, endDate: events[index].endDate, event: events[index])
                 }
                 //일정 상세화면에 선택된 일정 인덱스로 넘겨 주기
                 
             }
-        }
-    }
-           
-            //일정 상세화면에 선택된 일정 인덱스로 넘겨 주기
         }
     }
     
@@ -331,3 +300,4 @@ struct SelectTaskView: View {
 #Preview {
     SelectTaskView()
 }
+

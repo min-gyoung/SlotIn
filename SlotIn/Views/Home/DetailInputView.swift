@@ -186,6 +186,31 @@ struct DetailInputView: View {
                                 .cornerRadius(6)
                         }
                         .frame(width: 127, height: 34)
+                        .padding(.vertical, 0.5)
+                        
+                        Divider()
+                            .background(Color.gray300.frame(width: 361))
+                        
+                        HStack {
+                            Text("작업 마감일")
+                                .font(.system(size: 16))
+                                .padding(.leading, 5)
+                                .padding(.vertical, 8)
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                activePicker = .endDate
+                            }) {
+                                Text(formattedDate(endDate))
+                                    .font(.system(size: 17))
+                                    .foregroundColor(Color.green200)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(Color.gray500)
+                                    .cornerRadius(6)
+                            }
+                        }
                         .padding(.horizontal, 40)
                         .onChange(of: startDate, {
                             startDate = {
@@ -252,21 +277,16 @@ struct DetailInputView: View {
                         }
                         .padding(.horizontal, 40)
                     }
-                    .padding(.vertical, 0.5)
-
-                    Divider()
-                        .background(Color.gray300.frame(width: 361))
-
-                    HStack {
-                        Text("작업 마감일")
-                            .font(.system(size: 16))
-                            .padding(.leading, 5)
-                            .padding(.vertical, 8)
-
-                        Spacer()
-
+                    .foregroundColor(Color.gray100)
+                    .background(Color.gray600.frame(width: 361, height: 210).cornerRadius(12))
+                    //상자의 너비 수정 필요한가?
+                    
+                    Spacer()
+                    
+                    //아래의 두 버튼
+                    HStack(spacing: 24) {
                         Button(action: {
-                            activePicker = .endDate
+                            print("작업 보류하기")
                         }) {
                             Text(formattedDate(endDate))
                                 .font(.system(size: 17))
@@ -331,12 +351,16 @@ struct DetailInputView: View {
                                 .background(Color.gray500)
                                 .cornerRadius(6)
                         }
+                        .buttonStyle(FilledButtonStyle())
+                        .navigationDestination(isPresented: $isGoingTimeTable) {
+                            //                        TimeTableView(selectedTask: event.title, startTime: startDate, endTime: endDate, startHour: startTime, endHour: endTime)
+                            RecommendView(taskTitle: event.title, startTime: startDate, endTime: endDate, startHour: startTime, endHour: endTime)
+                        }
                     }
                     .padding(.horizontal, geometry.size.width * 0.0203)
                     .padding(.vertical, geometry.size.height * 0.0504)
                     .background(Color.gray700)
                 }
-//                 .background(Color.gray700.edgesIgnoringSafeArea(.all))
                 .foregroundColor(Color.gray100)
                 .background(Color.gray600.frame(width: 361, height: 201).cornerRadius(12))
                 //상자의 너비 수정 필요한가?
@@ -346,66 +370,27 @@ struct DetailInputView: View {
                 //아래의 두 버튼
                 HStack(spacing: 24) {
                     Button(action: {
-                        // 작업 보류하기 기능 추가
-                        alertString = alertMessage(item: event)
-                        showPopover = true
+                        print("작업 보류하기")
                     }) {
                         Text("작업 보류하기")
                             .frame(width: 144)
                     }
                     .buttonStyle(OutlinedButtonStyle())
                     .fontWeight(.semibold)
-                    .alert("작업이 보류되었습니다.", isPresented: $showPopover) {
-                            Button(action: {
-                                let formatter = DateFormatter()
-                                formatter.dateFormat = "HH:mm"
-                                
-                                //하루 중 선호 시간대(preferredTime)
-                                let preferred = "\(formatter.string(from: startTime)) ~ \(formatter.string(from: endTime))"
-                                
-                                //소요 시간(time) 계산: 분 단위
-                                let interval = event.endDate.timeIntervalSince(event.startDate)
-                                let minutes = Int(interval/60)
-                                
-                                //소요 시간을 문자열로 변환
-                                let durationFormatter = DateComponentsFormatter()
-                                    durationFormatter.allowedUnits = [.hour, .minute]
-                                    durationFormatter.unitsStyle = .full
-                                    let durationString = durationFormatter.string(from: interval) ?? ""
-                                
-                                let historyTask = Task(
-                                            title: event.title,
-                                            time: durationString,
-                                            startDate: event.startDate,
-                                            endDate: event.endDate,
-                                            preferredTime: preferred
-                                )
-                                context.insert(historyTask)
-                                showTaskView = true
-                                
-                                print("보관함으로 넘어가기")
-                            }, label: {
-                                Text("보관함에서 보기")
-                            })
-                        } message: {
-                            Text(alertString)
-                        }
-                    
+
                     Button(action: {
-                        // 가능한 시간만 보기 기능 추가
                         print("가능한 시간만 보기")
                         isGoingTimeTable.toggle()
                     }) {
                         Text("가능한 시간만 보기")
                             .frame(width: 144)
                             .fontWeight(.semibold)
+                            .foregroundColor(Color.green700)
                     }
                     .buttonStyle(FilledButtonStyle())
-                    .navigationDestination(isPresented: $showTaskView){
-                        TaskView()
-                    }
                     .navigationDestination(isPresented: $isGoingTimeTable) {
-                        TimeTableView(startTime: startDate, endTime: endDate, startHour: startTime, endHour: endTime, event: event)
+//                        TimeTableView(selectedTask: event.title, startTime: startDate, endTime: endDate, startHour: startTime, endHour: endTime)
+                        RecommendView(taskTitle: event.title, startTime: startDate, endTime: endDate, startHour: startTime, endHour: endTime)
                     }
                 }
                 .padding(.horizontal, 16)
@@ -488,7 +473,8 @@ struct DetailInputView: View {
                             .tint(Color.green200)
                             .background(Color.gray500)
                             .cornerRadius(13)
-                            .frame(width: 340, height: 320)
+                            .scaleEffect(0.85)
+                            .frame(width: 329)
                             .preferredColorScheme(.dark)
                         //현재 날짜 피커 투명도 조절 추가
                         //달력 크기 및 비율 조절 추가
@@ -499,7 +485,8 @@ struct DetailInputView: View {
                             .tint(Color.green200)
                             .background(Color.gray500)
                             .cornerRadius(13)
-                            .frame(width: 340, height: 340)
+                            .scaleEffect(0.85)
+                            .frame(width: 329)
                             .preferredColorScheme(.dark)
                         //현재 날짜 피커 투명도 조절 추가
                         //달력 크기 및 비율 조절 추가
@@ -507,20 +494,18 @@ struct DetailInputView: View {
                         DatePicker("", selection: $startTime, displayedComponents: [.hourAndMinute])
                             .datePickerStyle(.wheel)
                             .shadow(color: Color.gray700.opacity(0.1), radius: 30, x: 0, y: 10)
-                            .frame(width:219, height: 195)
                             .background(Color.gray500)
-                            .cornerRadius(13)
+                            .cornerRadius(8)
                             .preferredColorScheme(.dark)
-                        //시간휠 글씨 희게 만들기
+                            .frame(width: 219, height: 195)
                     case .endTime:
                         DatePicker("", selection: $endTime, displayedComponents: [.hourAndMinute])
                             .datePickerStyle(.wheel)
                             .shadow(color: Color.gray700.opacity(0.1), radius: 30, x: 0, y: 10)
-                            .frame(width:219, height: 195)
                             .background(Color.gray500)
-                            .cornerRadius(13)
+                            .cornerRadius(8)
                             .preferredColorScheme(.dark)
-                        //시간휠 글씨 희게 만들기
+                            .frame(width: 219, height: 195)
                     }
                 }
             }
@@ -631,5 +616,6 @@ struct PopupView: View {
 #Preview {
     DetailInputView(startDate: Date(), endDate: Date() + 3600, event: .init(eventStore: .init()))
 }
+
 
 
