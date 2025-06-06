@@ -11,6 +11,7 @@ import SwiftData
 struct TaskView: View {
  
     @Query(sort: \Task.startDate, order: .reverse) var tasks: [Task]
+    @Environment(\.modelContext) private var context
     
     var body: some View {
         
@@ -45,12 +46,18 @@ struct TaskView: View {
                                 }
                                 .padding(.horizontal,-10)
                             }
-                            
+                        }
+                        .onDelete{ indexSet in
+                            for index in indexSet{
+                                let task = tasks[index]
+                                context.delete(task)
+                            }
                         }
                         .padding(.horizontal,28)
                         .frame(width:361, height: 77)
                         .listRowBackground(Color.gray600)
                         .foregroundColor(.gray100)
+                        
                         
                     }
                     .scrollContentBackground(.hidden)
