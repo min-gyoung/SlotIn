@@ -16,22 +16,8 @@ struct TaskView: View {
     var body: some View {
         
         NavigationView{
-            ZStack{
-                
-                Color.gray700.ignoresSafeArea()
-                
-                
-                VStack{
-                    HStack{
-                        Text("보관함")
-                            .font(.system(size:28, weight:.semibold))
-                            .foregroundColor(.gray100)
-                        
-                        Spacer()
-                    }
-                    .padding(.horizontal,16)
-                    .padding(.top,55)
-                      
+            GeometryReader { geometry in
+                ZStack{
                     
                     List{
                         ForEach(tasks){ task in
@@ -52,7 +38,8 @@ struct TaskView: View {
                                 let task = tasks[index]
                                 context.delete(task)
                             }
-                        }
+                        .scrollContentBackground(.hidden)
+                        .background(.clear)
                         .padding(.horizontal,28)
                         .frame(width:361, height: 77)
                         .listRowBackground(Color.gray600)
@@ -60,8 +47,6 @@ struct TaskView: View {
                         
                         
                     }
-                    .scrollContentBackground(.hidden)
-                    .background(.clear)
                 }
             }
         }

@@ -212,6 +212,14 @@ struct DetailInputView: View {
                             }
                         }
                         .padding(.horizontal, 40)
+                        .onChange(of: startDate, {
+                            startDate = {
+                                var components = Calendar.current.dateComponents([.year, .month, .day], from: startDate)
+                                components.hour = 0
+                                components.minute = 0
+                                return Calendar.current.date(from: components)!
+                            }()
+                        })
                         .padding(.vertical, 0.5)
                         
                         Divider()
@@ -287,7 +295,16 @@ struct DetailInputView: View {
                                 .padding(.vertical, 6)
                                 .background(Color.gray500)
                                 .cornerRadius(6)
-                        }.frame(width: 127, height: 34)
+                        }
+                        .frame(width: 127, height: 34)
+                        .onChange(of: endDate, {
+                            endDate = {
+                                var components = Calendar.current.dateComponents([.year, .month, .day], from: endDate)
+                                components.hour = 23
+                                components.minute = 59
+                                return Calendar.current.date(from: components)!
+                            }()
+                        })
                     }
                     .foregroundColor(Color.gray100)
                     .background(Color.gray600.frame(width: 361, height: 210).cornerRadius(12))

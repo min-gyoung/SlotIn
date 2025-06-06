@@ -115,14 +115,45 @@ struct TimeTableViewModal: View {
         }
         
         Button("이 시간으로 확정하기") {
+          print("버튼 클릭됨")
           requestAccess {
-            addEvent(
-              title: taskTitle,
-              startDate: startDate,
-              endDate: calculatedEndDate,
-              notes: "SlotIn에서 생성됨",
-              category: "SlotIn"
-            )
+            print("캘린더 접근 허용됨")
+            
+            // 기존 이벤트가 전달되었는지 확인
+            var eventToUpdate = existingEvent
+            
+            // 전달되지 않았으면 제목으로 직접 검색
+            if eventToUpdate == nil {
+              eventToUpdate = findEvent(byTitle: taskTitle)
+              if let e = eventToUpdate {
+                print("제목으로 찾은 기존 이벤트 있음: \(e.title)")
+              } else {
+                print("기존 제목과 일치하는 이벤트 없음")
+              }
+            }
+            
+            if let event = eventToUpdate {
+              print("기존 이벤트 확인: \(event.title)")
+              print("기존 시작시간: \(event.startDate) -> 새로운: \(startDate)")
+              
+              updateEvent(
+                event,
+                title: taskTitle,
+                startDate: startDate,
+                endDate: calculatedEndDate,
+                notes: "SlotIn에서 수정됨"
+              )
+            } else {
+              print("기존 이벤트가 없어서 새로 추가합니다")
+              addEvent(
+                title: taskTitle,
+                startDate: startDate,
+                endDate: calculatedEndDate,
+                notes: "SlotIn에서 생성됨",
+                category: "SlotIn"
+              )
+            }
+            
             showConfirmation = true
           }
         }
@@ -215,6 +246,32 @@ struct TimeTableViewModal: View {
     DispatchQueue.main.async {
       self.events = events
     }
+  }
+  
+  // 일정 수정
+  func updateEvent(_ event: EKEvent, title: String, startDate: Date, endDate: Date, notes: String) {
+    event.title = title
+    event.startDate = startDate
+    event.endDate = endDate
+    event.notes = notes
+    
+    do {
+      try eventStore.save(event, span: .thisEvent)
+      print("일정 수정 완료")
+    } catch {
+      print("일정 수정 실패: \(error)")
+    }
+  }
+  
+  // 제목이 일치하는 기존 이벤트 찾기
+  func findEvent(byTitle title: String) -> EKEvent? {
+    let start = Calendar.current.startOfDay(for: Date())
+    let end = Calendar.current.date(byAdding: .day, value: 30, to: start)! // 향후 한 달 내 검색
+    
+    let predicate = eventStore.predicateForEvents(withStart: start, end: end, calendars: nil)
+    let events = eventStore.events(matching: predicate)
+    
+    return events.first { $0.title == title }
   }
   
   private func formatted(_ date: Date, dateOnly: Bool = false) -> String {

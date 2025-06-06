@@ -78,6 +78,7 @@ struct TimeTableView: View {
       
       HStack {
         Button(action: {
+            selectedSlots.removeAll()
           currentWeekStartDate = TimeTableModel.previousWeek(from: currentWeekStartDate)
         }) {
           Image(systemName: "chevron.left")
@@ -98,7 +99,9 @@ struct TimeTableView: View {
         Spacer()
         
         Button(action: {
+            selectedSlots.removeAll()
           currentWeekStartDate = TimeTableModel.nextWeek(from: currentWeekStartDate)
+            
         }) {
           Image(systemName: "chevron.right")
             .font(.system(size: 17, weight: .semibold))
@@ -191,11 +194,11 @@ struct TimeTableView: View {
   }
   
   var model: TimeTableModel {
-      guard let start = event.startDate, let end = event.endDate else {
-                // fallback: 현재 시간을 기준으로 임시 모델 리턴
-                return TimeTableModel(startDate: Date(), endDate: Date().addingTimeInterval(3600))
-            }
-            return TimeTableModel(startDate: start, endDate: end)
+    guard let start = event.startDate, let end = event.endDate else {
+      // fallback: 현재 시간을 기준으로 임시 모델 리턴
+      return TimeTableModel(startDate: Date(), endDate: Date().addingTimeInterval(3600))
+    }
+    return TimeTableModel(startDate: start, endDate: end)
   }
   
   var requiredSlotCount: Int {
@@ -220,37 +223,54 @@ struct TimeTableView: View {
     Button(action: {
       if isAvailable {
         // 기존 slotButton 동작 유지
+          selectedStartSlot = (day: dayIndex, hour: hour)
         if let start = selectedStartSlot {
-          if start.day == dayIndex {
-            let range = start.hour <= hour ? start.hour...hour : hour...start.hour
+            let range = start.hour...hour + requiredSlotCount - 1
             let slotCount = range.count
+              print(range)
+              print(slotCount)
             
-            if slotCount == requiredSlotCount {
+              if hour + requiredSlotCount <= endHourValue {
               selectedSlots.removeAll()
               for h in range {
-                selectedSlots.insert("\(dayIndex)-\(h)")
+                  let tempDate = Calendar.current.date(bySettingHour: h, minute: 0, second: 0, of: weekDates[dayIndex])!
+                  let isAble = !hasEvent(at: tempDate) && !isOverDate(at: tempDate)
+                  if isAble {
+                      selectedSlots.insert("\(dayIndex)-\(h)")
+                      isValidSlotSelection = true
+                      alertTitle = event.title
+                      alertDescription = formattedTimeRange(for: dayIndex, from: range.lowerBound, to: range.upperBound)
+                  } else {
+                      isValidSlotSelection = false
+                      alertTitle = "슬롯 선택 불가"
+                      alertDescription = "중간에 존재하는 일정 존재"
+                  }
               }
-              isValidSlotSelection = true
-              alertTitle = event.title
-              alertDescription = formattedTimeRange(for: dayIndex, from: range.lowerBound, to: range.upperBound)
+              
             } else {
               isValidSlotSelection = false
               alertTitle = "슬롯 선택 불가"
               alertDescription = "\(requiredSlotCount)시간 연속으로 선택해주세요."
             }
-          } else {
-            isValidSlotSelection = false
-            alertTitle = "선택 불가"
-            alertDescription = "같은 요일 내에서만 선택 가능합니다."
-          }
           selectedStartSlot = nil
           showAlert = true
         } else {
-          selectedStartSlot = (day: dayIndex, hour: hour)
+          
+            print("오류")
+            
         }
       }
     }) {
-      Text("")
+      
+      // 셀에 해당하는 요일, 시간 계산
+      let cellDateTime = dateFromWeekAndHour(weekStart: currentWeekStartDate, dayOffset: dayIndex, hour: hour)
+      
+      // 셀에 일정 제목 표시
+      let matchingEvent = events.first(where: {
+        $0.startDate <= cellDateTime && cellDateTime < $0.endDate
+      })
+      
+      Text(matchingEvent?.title ?? "")
         .frame(width: 44, height: 44)
         .background(
           isSelected
@@ -259,6 +279,15 @@ struct TimeTableView: View {
         )
         .cornerRadius(4)
     }
+  }
+  
+  // 요일 시작 계산 함수
+  func dateFromWeekAndHour(weekStart: Date, dayOffset: Int, hour: Int) -> Date {
+    var components = Calendar.current.dateComponents([.year, .month, .day], from: weekStart)
+    components.day! += dayOffset
+    components.hour = hour
+    components.minute = 0
+    return Calendar.current.date(from: components)!
   }
   
   // 날짜 및 시간 범위 포맷 함수
@@ -300,13 +329,14 @@ struct TimeTableView: View {
     }
     return false
   }
-    
-    private func isOverDate(at date: Date) -> Bool {
-        if startTime <= date && date <= endTime {
-            return false
-      }
-      return true
+  
+  // 특정 date가 범위를 벗어났는지 확인
+  private func isOverDate(at date: Date) -> Bool {
+    if startTime <= date && date <= endTime {
+      return false
     }
+    return true
+  }
 }
 
 #Preview {
