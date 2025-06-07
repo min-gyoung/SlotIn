@@ -1,5 +1,5 @@
 //
-//  SelectTaskListView.swift
+//  SelectedTaskListView.swift
 //  SlotIn
 //
 //  Created by 김민경 on 6/7/25.
@@ -8,12 +8,13 @@
 import SwiftUI
 import EventKit
 
-struct SelectTaskListView: View {
+struct SelectedTaskListView: View {
   @StateObject private var calendarManager = CalendarManager()
   @State private var selectedCalendarId: String = ""
   
   var body: some View {
     VStack(alignment: .leading) {
+
       Text("작업 선택 - 영상별 보기")
       Text("영상 단위로 변경할 작업을 선택하세요.")
         .foregroundColor(.gray)
@@ -46,9 +47,9 @@ struct SelectTaskListView: View {
             
             ForEach(filteredEvents, id: \.eventIdentifier) { event in
               HStack {
-                Circle()
+                RoundedRectangle(cornerRadius: 10)
                   .fill(Color(event.calendar.cgColor ?? UIColor.systemGray.cgColor))
-                  .frame(width: 10, height: 10)
+                  .frame(width: 5, height: event.isAllDay ? 24 : 44)
                 
                 Text(event.title)
                   .font(.body)
@@ -60,7 +61,7 @@ struct SelectTaskListView: View {
                     .font(.caption)
                     .foregroundColor(.gray)
                 } else {
-                  Text("\(formattedTime(event.startDate)) - \(formattedTime(event.endDate))")
+                  Text("\(formattedTime(event.startDate))\n\(formattedTime(event.endDate))")
                     .font(.caption)
                     .foregroundColor(.gray)
                 }
@@ -100,5 +101,5 @@ extension Color {
 }
 
 #Preview {
-  SelectTaskListView()
+  SelectedTaskListView()
 }
