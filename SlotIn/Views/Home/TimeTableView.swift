@@ -165,6 +165,9 @@ struct TimeTableView: View {
     .onAppear {
       fetchEventsForWeek()
     }
+    .onChange(of: currentWeekStartDate) { _ in
+      fetchEventsForWeek()
+    }
     .padding()
     .alert(isPresented: $showAlert) {
       Alert(
@@ -213,13 +216,16 @@ struct TimeTableView: View {
   private func slotButton(dayIndex: Int, hour: Int) -> some View {
     let key = "\(dayIndex)-\(hour)"
     let date = Calendar.current.date(bySettingHour: hour, minute: 0, second: 0, of: weekDates[dayIndex])!
-    
     let isAvailable = !hasEvent(at: date) && !isOverDate(at: date)
     let isSelected = selectedSlots.contains(key)
     
+    let cellDateTime = dateFromWeekAndHour(weekStart: currentWeekStartDate, dayOffset: dayIndex, hour: hour)
+    let matchingEvents = events.filter {
+      $0.startDate <= cellDateTime && cellDateTime < $0.endDate
+    }.sorted { ($0.title ?? "") < ($1.title ?? "") }
+    
     Button(action: {
       if isAvailable {
-        // 기존 slotButton 동작 유지
         if let start = selectedStartSlot {
           if start.day == dayIndex {
             let range = start.hour <= hour ? start.hour...hour : hour...start.hour
@@ -250,24 +256,28 @@ struct TimeTableView: View {
         }
       }
     }) {
-      
-      // 셀에 해당하는 요일, 시간 계산
-      let cellDateTime = dateFromWeekAndHour(weekStart: currentWeekStartDate, dayOffset: dayIndex, hour: hour)
-      
-      // 셀에 일정 제목 표시
-      let matchingEvent = events.first(where: {
-        $0.startDate <= cellDateTime && cellDateTime < $0.endDate
-      })
-      
-      Text(matchingEvent?.title ?? "")
-        .frame(width: 44, height: 44)
-        .background(
-          isSelected
-          ? Color.green300
-          : (isAvailable ? Color.green100 : Color.gray.opacity(0.2))
-        )
-        .cornerRadius(4)
+      // 색상 적용
+      ZStack {
+        if isSelected {
+          Color.green300
+        } else if let event = matchingEvents.first, let calendarColor = event.calendar.cgColor {
+          Color(cgColor: calendarColor)
+        } else {
+          isAvailable ? Color.green100 : Color.gray.opacity(0.2)
+        }
+        
+        if let firstEvent = matchingEvents.first {
+          Text(firstEvent.title ?? "")
+            .font(.system(size: 10, weight: .bold))
+            .foregroundColor(.white)
+            .multilineTextAlignment(.center)
+            .lineLimit(2)
+            .padding(3)
+        }
+      }
     }
+    .frame(width: 44, height: 44)
+    .cornerRadius(4)
   }
   
   // 요일 시작 계산 함수
@@ -328,11 +338,19 @@ struct TimeTableView: View {
   }
 }
 
+// 캘린더 색상 적용
+extension Color {
+  init(cgColor: CGColor) {
+    self = Color(UIColor(cgColor: cgColor))
+  }
+}
+
 #Preview {
   TimeTableView(
     startTime: Calendar.current.date(bySettingHour: 9, minute: 30, second: 0, of: Date())!,
     endTime: Calendar.current.date(bySettingHour: 11, minute: 0, second: 0, of: Date())!,
-    startHour: Calendar.current.date(bySettingHour: 9, minute: 30, second: 0, of: Date())!,
-    endHour: Calendar.current.date(bySettingHour: 11, minute: 0, second: 0, of: Date())!, event: .init(eventStore: .init())
+    startHour: Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: Date())!,
+    endHour: Calendar.current.date(bySettingHour: 23, minute: 0, second: 0, of: Date())!,
+    event: EKEvent(eventStore: EKEventStore())
   )
 }
