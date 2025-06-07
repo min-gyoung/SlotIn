@@ -119,31 +119,6 @@ struct DetailInputView: View {
                                 .cornerRadius(6)
                         }
                         .frame(width: 127, height: 34)
-                        .padding(.vertical, 0.5)
-                        
-                        Divider()
-                            .background(Color.gray300.frame(width: 361))
-                        
-                        HStack {
-                            Text("작업 마감일")
-                                .font(.system(size: 16))
-                                .padding(.leading, 5)
-                                .padding(.vertical, 8)
-                            
-                            Spacer()
-                            
-                            Button(action: {
-                                activePicker = .endDate
-                            }) {
-                                Text(formattedDate(endDate))
-                                    .font(.system(size: 17))
-                                    .foregroundColor(Color.green200)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(Color.gray500)
-                                    .cornerRadius(6)
-                            }
-                        }
                         .padding(.horizontal, 40)
                         .onChange(of: startDate, {
                             startDate = {
@@ -153,62 +128,6 @@ struct DetailInputView: View {
                                 return Calendar.current.date(from: components)!
                             }()
                         })
-                        .padding(.vertical, 0.5)
-                        
-                        Divider()
-                            .background(Color.gray300.frame(width: 361))
-                        
-                        HStack {
-                            Text("하루 중 선호 시간대")
-                                .padding(.leading, 5)
-                                .padding(.vertical, 8)
-                                .font(.system(size: 16))
-                            
-                            Spacer()
-                            
-                            Text("시작")
-                                .font(.system(size: 15))
-                                .padding(.horizontal, 8)
-                            
-                            Button(action: {
-                                activePicker = .startTime
-                            }) {
-                                Text(formattedTime(startTime))
-                                    .font(.system(size: 17))
-                                    .foregroundColor(Color.green200)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(Color.gray500)
-                                    .cornerRadius(6)
-                            }
-                        }
-                        .padding(.horizontal, 40)
-                        .padding(.vertical, 0.5)
-                        
-                        Divider()
-                            .background(Color.gray300.frame(width: 361))
-                        
-                        HStack {
-                            Spacer()
-                            
-                            Text("종료")
-                                .font(.system(size: 15))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 8)
-                            
-                            Button(action: {
-                                activePicker = .endTime
-                            }) {
-                                Text(formattedTime(endTime))
-                                    .font(.system(size: 17))
-                                    .foregroundColor(Color.green200)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(Color.gray500)
-                                    .cornerRadius(6)
-                            }
-                        }
-                        .padding(.horizontal, 40)
                     }
                     .padding(.vertical, 0.5)
 
@@ -329,7 +248,7 @@ struct DetailInputView: View {
                                 let preferred = "\(formatter.string(from: startTime)) ~ \(formatter.string(from: endTime))"
                                 
                                 //소요 시간(time) 계산: 분 단위
-                                let interval = event.endDate.timeIntervalSince(event.startDate)
+                                let interval = endDate.timeIntervalSince(startDate)
                                 let minutes = Int(interval/60)
                                 
                                 //소요 시간을 문자열로 변환
@@ -511,6 +430,4 @@ struct FilledButtonStyle: ButtonStyle {
 #Preview {
     DetailInputView(startDate: Date(), endDate: Date() + 3600, event: .init(eventStore: .init()))
 }
-
-
 
