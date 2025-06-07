@@ -12,6 +12,7 @@ class CalendarManager: ObservableObject {
   private let eventStore = EKEventStore()
   
   @Published var events: [EKEvent] = []
+  @Published var calendars: [EKCalendar] = []
   
   init() {
     // EKEventStore에 변경이 있을 때 일정 자동 조회 (fetch)
@@ -21,6 +22,7 @@ class CalendarManager: ObservableObject {
       name: .EKEventStoreChanged,
       object: eventStore
     )
+    loadCalendars()
   }
   
   // 앱 생성 캘린더 가져오기
@@ -131,5 +133,9 @@ class CalendarManager: ObservableObject {
     let start = Calendar.current.startOfDay(for: Date())
     let end = Calendar.current.date(byAdding: .day, value: 7, to: start)!
     fetchEvents(startDate: start, endDate: end)
+  }
+  
+  func loadCalendars() {
+    calendars = eventStore.calendars(for: .event)
   }
 }

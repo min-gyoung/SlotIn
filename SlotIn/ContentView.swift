@@ -15,7 +15,7 @@ struct ContentView: View {
         
         TabView{
             Tab("작업", systemImage:"list.bullet"){
-                SelectTaskView()
+              SelectTaskListView()
             }
             Tab("보관함", systemImage:"archivebox"){
                 TaskView()
