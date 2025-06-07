@@ -2,7 +2,7 @@
 //  SelectedTaskCalendarView.swift
 //  SlotIn
 //
-//  Created by 김민경 on 6/7/25.
+//  Edited by One on 6/7/25.
 //
 
 import SwiftUI
@@ -14,6 +14,8 @@ struct SelectedTaskCalendarView: View {
   @State private var events: [EKEvent] = []
   private let eventStore = EKEventStore()
   @State var event: EKEvent
+    
+    @State private var isSelected: Bool = false
   
   init(currentWeekStartDate: Date, event: EKEvent) {
     self._currentWeekStartDate = State(initialValue: currentWeekStartDate)
@@ -50,84 +52,194 @@ struct SelectedTaskCalendarView: View {
     }
   }
   
-  var body: some View {
-    VStack {
-      Text("작업 선택 - 일정에서 보기")
-      Text("캘린더에서 변경할 작업을 선택하세요.")
-      
-      headerView
-      
-      Divider()
-      
-      // 날짜 숫자 헤더
-      HStack {
-        ForEach(weekDates, id: \.self) { date in
-          Text("\(calendar.component(.day, from: date))")
-            .frame(width: 44, height: 20)
-            .font(.system(size: 14))
-            .multilineTextAlignment(.center)
-            .foregroundColor(Color.gray)
-        }
-      }
-      
-      ScrollView {
-        HStack(alignment: .top) {
-          ForEach(0..<7, id: \.self) { dayIndex in
-            let dayEvents = dailyEvents[dayIndex]
-            let range = hourRange(for: dayEvents) ?? [9] // 최소 하나는 보여줌
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
             
-            VStack(spacing: 3) {
-              Text(weekdays[dayIndex])
-                .font(.caption)
-              
-              ForEach(range, id: \.self) { hour in
-                slotCell(for: dayIndex, hour: hour, events: dayEvents)
-              }
+            titleView
+            
+            calendarView
+            
+            
+            
+            Spacer()
+            
+            
+            buttonView
+            
+            
+        }
+        .onAppear {
+            fetchEventsForWeek()
+        }
+        .background(Color.gray700)
+        .safeAreaPadding(.top, 60)
+    } //body
+    
+    
+    //MARK: first
+    
+    var titleView: some View {
+        VStack {
+            Text("작업 선택 - 일정에서 보기")
+                .foregroundStyle(Color.gray100)
+                .font(.system(size: 28, weight: .bold))
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 16)
+    }
+    
+    //MARK: middle
+    
+    var calendarView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("캘린더에서 변경할 작업을 선택하세요.")
+                .foregroundStyle(Color.gray100)
+                .font(.system(size: 17, weight: .semibold))
+            
+            VStack {
+                headerView
+                
+                calendarInfoView
+                
+                calendarSlotView
             }
-          }
+            
+            if isSelected {
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("선택 작업")
+                        .foregroundStyle(Color.gray100)
+                        .font(.system(size: 17, weight: .semibold))
+                    
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 10)
+                            .foregroundStyle(Color.gray500)
+                            .frame(height: 80)
+                        
+                        VStack(spacing: 4) {
+                            Text("일정 제목")
+                                .foregroundStyle(Color.green100)
+                                .font(.system(size: 17, weight: .semibold))
+                            Text("일정 날짜")
+                                .foregroundStyle(Color.gray100)
+                                .font(.system(size: 17, weight: .regular))
+                        }
+                        .padding(16)
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+        
+    }
+    
+    var headerView: some View {
+      HStack {
+        Button(action: {
+          currentWeekStartDate = TimeTableModel.previousWeek(from: currentWeekStartDate)
+          fetchEventsForWeek()
+        }) {
+          Image(systemName: "chevron.left")
+            .font(.system(size: 17, weight: .semibold))
+            .foregroundColor(.gray100)
+            .padding(.horizontal, 17)
+        }
+        
+        Spacer()
+        
+        Text(TimeTableModel.weekInfoText(from: currentWeekStartDate))
+              .foregroundStyle(Color.gray100)
+              .font(.system(size: 17, weight: .semibold))
+        
+        Spacer()
+        
+        Button(action: {
+          currentWeekStartDate = TimeTableModel.nextWeek(from: currentWeekStartDate)
+          fetchEventsForWeek()
+        }) {
+          Image(systemName: "chevron.right")
+            .font(.system(size: 17, weight: .semibold))
+            .foregroundColor(.gray100)
+            .padding(.horizontal, 17)
         }
       }
-      
-      Button("작업 세부 정보 등록하기") {
-        fetchEventsForWeek()
-      }
     }
-    .onAppear {
-      fetchEventsForWeek()
+    
+    var calendarInfoView: some View {
+        VStack(spacing: 4) {
+            VStack(spacing: 2) {
+                HStack {
+                    ForEach(0..<7, id: \.self) { dayIndex in
+                        VStack(spacing: 2) {
+                            Text(weekdays[dayIndex])
+                                .frame(width: 46, height: 20)
+                                .font(.system(size: 17, weight: .regular))
+                                .foregroundColor(.gray100)
+                        }
+                    }
+                }
+                
+                Divider()
+                    .foregroundStyle(Color.gray600)
+            }
+            
+            HStack {
+                ForEach(0..<7, id: \.self) { dayIndex in
+                    let date = weekDates[dayIndex]
+                    Text("\(calendar.component(.day, from: date))")
+                        .frame(width: 46, height: 20)
+                        .multilineTextAlignment(.center)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(.gray100)
+                    
+                }
+            }
+        }
     }
-  }
+    
+    var calendarSlotView: some View {
+        ScrollView {
+            HStack {
+                ForEach(0..<7, id: \.self) { dayIndex in
+                  let dayEvents = dailyEvents[dayIndex]
+                  let range = hourRange(for: dayEvents) ?? [9] // 최소 하나는 보여줌
+                  VStack(spacing: 3) {
+                    
+                    ForEach(range, id: \.self) { hour in
+                      Button(action: {
+                          print(hour)
+                          isSelected = true
+                      }, label: {
+                          slotCell(for: dayIndex, hour: hour, events: dayEvents)
+                      })
+                    }
+                  }
+                }
+            }
+        }
+    }
+    
+    //MARK: last
+    
+    var buttonView: some View {
+        VStack {
+            Button(action: {
+                print("qwer")
+            }, label: {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .foregroundStyle(isSelected ? Color.green200 : Color.gray400)
+                        .frame(height: 46)
+                    Text("작업 세부 정보 등록하기")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(isSelected ? Color.gray700 : Color.gray100)
+                }
+            })
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 43)
+    }
   
-  var headerView: some View {
-    HStack {
-      Button(action: {
-        currentWeekStartDate = TimeTableModel.previousWeek(from: currentWeekStartDate)
-        fetchEventsForWeek()
-      }) {
-        Image(systemName: "chevron.left")
-          .font(.system(size: 17, weight: .semibold))
-          .foregroundColor(.gray)
-          .padding(.horizontal, 17)
-      }
-      
-      Spacer()
-      
-      Text(TimeTableModel.weekInfoText(from: currentWeekStartDate))
-        .font(.system(size: 17, weight: .semibold))
-        .foregroundColor(.gray)
-      
-      Spacer()
-      
-      Button(action: {
-        currentWeekStartDate = TimeTableModel.nextWeek(from: currentWeekStartDate)
-        fetchEventsForWeek()
-      }) {
-        Image(systemName: "chevron.right")
-          .font(.system(size: 17, weight: .semibold))
-          .foregroundColor(.gray)
-          .padding(.horizontal, 17)
-      }
-    }
-  }
+  
   
   func fetchEventsForWeek() {
     let startOfWeek = currentWeekStartDate
@@ -205,11 +317,11 @@ struct SelectedTaskCalendarView: View {
           .padding(2)
           .frame(maxWidth: .infinity)
           .background(Color.blue)
-          .cornerRadius(3)
+          .cornerRadius(4)
         }
       }
     }
-      .frame(width: 44, height: 44)
+      .frame(width: 46, height: 46)
       .background(matchingEvents.isEmpty ? Color.gray.opacity(0.2) : Color.clear)
     
     return AnyView(cell)
